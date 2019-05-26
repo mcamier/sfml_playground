@@ -22,4 +22,9 @@ vec2 angleToVec(double deg)
     return vec2(cos(rad), sin(rad));
 }
 
+vec2 interpolate(vec2 a, vec2 b, float t)
+{
+    return vec2(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
+}
+
 #endif //FOOBAR_MATH_HPP

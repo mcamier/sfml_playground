@@ -4,21 +4,21 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 17)
 
 set(pong_src
-        src/ball.hpp
-        src/pong.hpp
-        src/vec2.hpp
-        src/mat3.hpp
-        src/main.cpp
-        src/player.hpp
-        src/math.hpp)
-
-SET(SFML_LIB_PATH "C:\\Program\ Files\ (x86)\\SFML\\lib")
-SET(SFML_LIB_INCLUDE "C:\\Program\ Files\ (x86)\\SFML\\include")
+        ball.hpp
+        main.cpp
+        player.hpp
+        menu_screen.hpp
+        game_screen.hpp)
 
 add_executable(pong ${pong_src})
 
+set_target_properties(pong PROPERTIES
+        CXX_STANDARD 17
+        CXX_EXTENSIONS OFF)
+
 target_include_directories(pong
         PUBLIC
+            utils
             ${SFML_LIB_INCLUDE})
 
 target_link_directories(pong
@@ -27,6 +27,7 @@ target_link_directories(pong
 
 target_link_libraries(pong
         PUBLIC
+            utils
             sfml-graphics
             sfml-window
             sfml-system)

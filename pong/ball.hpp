@@ -12,6 +12,8 @@ public:
     vec2 pos_dest;
     vec2 vector = vec2(0, 0);
 
+    Ball() {}
+
     Ball(vec2 pos)
         :pos(pos), pos_dest(pos) { }
 

@@ -1,7 +1,7 @@
 #ifndef FOOBAR_PLAYER_HPP
 #define FOOBAR_PLAYER_HPP
 
-#include "vec2.hpp"
+#include "../utils/vec2.hpp"
 
 class Player {
 
@@ -13,6 +13,8 @@ public:
     int score;
     vec2 pos;
     vec2 pos_dest;
+
+    Player() {}
 
     Player(vec2 pos)
             :pos(pos), pos_dest(pos), score(0) { }

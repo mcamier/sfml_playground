@@ -7,5 +7,8 @@ project(foobar
 SET(SFML_LIB_PATH "C:\\Program\ Files\ (x86)\\SFML\\lib")
 SET(SFML_LIB_INCLUDE "C:\\Program\ Files\ (x86)\\SFML\\include")
 
+add_subdirectory(tools)
 add_subdirectory(utils)
+
 add_subdirectory(pong)
+add_subdirectory(ong)

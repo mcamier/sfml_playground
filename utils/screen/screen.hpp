@@ -27,31 +27,35 @@ private:
     bool isExiting = false;
 
     /*
-     * if true, the screen can be drawn
-     * Should be false, when a non-translucent screen cover this screen
-     */
-    bool isCovered = false;
-
-    /*
-     *
+     * Elapsed time of the transition in seconds
      */
     float transitionTimeElapsed = 0;
 
     /*
-     *
+     * Instance of the screenManager managing the screen
      */
     ScreenManager* owner = nullptr;
 
+    /*
+     * Computed value, is true the screen must be drawn
+     */
+    bool _isRenderable = false;
+
 protected:
+    /*
+     * Blocker screen doesnt allow screen below to be updated
+     */
+    bool isBlocker = true;
+
+    /*
+     * Translucent screen allow screen below to be drawn
+     */
+    bool isTranslucent = false;
+
     /*
      * Duration of the transition expressed in seconds
      */
-    float transitionDurationSec = 2;
-
-    /*
-     * True if the screen should mask the screen below in the stack of screen
-     */
-    bool isTranslucent = false;
+    float transitionDurationSec = 2.0f;
 
 public:
     virtual bool handleEvent(const Event& event) = 0;

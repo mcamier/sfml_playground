@@ -1,10 +1,6 @@
-#ifndef FOOBAR_MATH_HPP
-#define FOOBAR_MATH_HPP
+#include "math.hpp"
 
-#include <cmath>
-#include "vec2.hpp"
-
-#define PI 3.14159265
+#include <math.h>
 
 double toRad(double degree)
 {
@@ -26,5 +22,3 @@ vec2 interpolate(vec2 a, vec2 b, float t)
 {
     return vec2(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
 }
-
-#endif //FOOBAR_MATH_HPP

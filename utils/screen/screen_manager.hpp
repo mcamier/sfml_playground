@@ -8,12 +8,12 @@
 
 using std::list;
 
+using sf::Event;
 using sf::Time;
+using sf::Sprite;
 using sf::RenderWindow;
 using sf::RenderTexture;
-using sf::Sprite;
 using sf::RenderStates;
-using sf::Event;
 
 class ScreenManager {
 
@@ -26,7 +26,7 @@ public:
 
     void update(const Time& time);
 
-    void render(RenderWindow& target);
+    void render(RenderTexture& target);
 
 };
 

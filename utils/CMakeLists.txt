@@ -4,14 +4,16 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_CXX_STANDARD 17)
 
 set(utils_src
-        mat3.cpp
-        vec2.hpp
-        mat3.hpp
-        math.hpp
-        screen.cpp
-        screen.hpp
-        screen_manager.cpp
-        screen_manager.hpp)
+        math/mat3.hpp
+        math/mat3.cpp
+        math/vec2.hpp
+        math/vec2.cpp
+        math/math.hpp
+        math/math.cpp
+        screen/screen.cpp
+        screen/screen.hpp
+        screen/screen_manager.cpp
+        screen/screen_manager.hpp)
 
 add_library(utils ${utils_src})
 
@@ -31,4 +33,5 @@ target_link_libraries(utils
         PUBLIC
             sfml-graphics
             sfml-window
-            sfml-system)
+            sfml-system
+            sfml-audio)

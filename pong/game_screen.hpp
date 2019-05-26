@@ -4,10 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
 
 #include "player.hpp"
-#include "../utils/screen.hpp"
+#include "../utils/screen/screen.hpp"
 #include "ball.hpp"
+#include "pause_screen.hpp"
 
 class GameScreen : public Screen {
 
@@ -27,21 +29,50 @@ private:
     Player p1;
     Player p2;
     Ball ball;
+    PauseScreen* pause_screen;
+    sf::SoundBuffer hit_sound_buffer;
+    sf::SoundBuffer boom_sound_buffer;
+    sf::Sound hit_sound;
+    sf::Sound boom_sound;
 
 public:
-    bool load() {
+    GameScreen() {
+        this->transitionDurationSec = 0.0f;
+    }
+
+    bool load()
+    {
         if (!font.loadFromFile("PressStart2P.ttf")) {
             this->isLoaded = false;
+            return false;
         }
+        if (!hit_sound_buffer.loadFromFile("hit.wav")) {
+            this->isLoaded = false;
+            return false;
+        }
+        hit_sound.setBuffer(hit_sound_buffer);
+
+        if (!boom_sound_buffer.loadFromFile("boom.wav")) {
+            this->isLoaded = false;
+            return false;
+        }
+        boom_sound.setBuffer(boom_sound_buffer);
+
         p1 = Player(paddle_p1_x_axis, game_height/2);
         p2 = Player(paddle_p2_x_axis, game_height/2);
         ball = Ball(game_width/2, game_height/2);
         this->isLoaded = true;
 
+        pause_screen = new PauseScreen();
+        pause_screen->load();
+
         return this->isLoaded;
     }
 
-    void update(const sf::Time& time) override {
+    void update(const sf::Time& time) override
+    {
+        if (!isActive()) return;
+
         float elapsedSec = time.asSeconds();
         // Start the round is not already started when the player push the space bar
         if (!round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
@@ -58,17 +89,17 @@ public:
 
             // player 1 move handling
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-                p1.pos_dest.y -= elapsedSec * Player::speed;
+                p1.pos_dest.y -= elapsedSec*Player::speed;
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-                p1.pos_dest.y += elapsedSec * Player::speed;
+                p1.pos_dest.y += elapsedSec*Player::speed;
             }
 
             // Move the ball if round active
             if (round_active) {
-                float ballSpeed = Ball::speed * (1 + (0.2 * collisionCount));
-                ball.pos_dest.x = ball.pos.x+(ball.vector.x*elapsedSec * ballSpeed);
-                ball.pos_dest.y = ball.pos.y+(ball.vector.y*elapsedSec * ballSpeed);
+                float ballSpeed = Ball::speed*(1+(0.2*collisionCount));
+                ball.pos_dest.x = ball.pos.x+(ball.vector.x*elapsedSec*ballSpeed);
+                ball.pos_dest.y = ball.pos.y+(ball.vector.y*elapsedSec*ballSpeed);
             }
 
             if (isMoveAllowed(p1.pos_dest)) {
@@ -115,12 +146,14 @@ public:
             if (ballCollideWithPlayer(ball, p1) || ballCollideWithPlayer(ball, p2)) {
                 // should compute the exact place where the ball meet the paddle
                 // otherwise bad thing could happens if time elapsed between 2 frames is too big
+                hit_sound.play();
                 ball.resetDest();
                 ball.vector.x = -ball.vector.x;
                 collisionCount++;
             }
             // collide with top and bottom  border
             if (collideWithTop || collideWithBottom) {
+                hit_sound.play();
                 ball.resetDest();
                 ball.vector.y = -ball.vector.y;
             }
@@ -133,21 +166,30 @@ public:
                 p2.score++;
                 collisionCount = 0;
                 round_active = false;
+                boom_sound.play();
             }
             else if (collideWithRightGoal) {
                 resetBallAndPlayersPosition(ball, p1, p2);
                 p1.score++;
                 collisionCount = 0;
                 round_active = false;
+                boom_sound.play();
             }
         }
     }
 
-    bool handleEvent(const sf::Event& event) override {
+    bool handleEvent(const sf::Event& event) override
+    {
+        if ((event.type==sf::Event::EventType::KeyPressed) &&
+                (event.key.code==sf::Keyboard::Key::Escape)) {
+            getOwner().addScreen(static_cast<Screen*>(pause_screen));
+        }
+
         return false;
     }
 
-    void render(sf::RenderTexture& target) override {
+    void render(sf::RenderTexture& target) override
+    {
         drawPlayer(target, p1.pos);
         drawPlayer(target, p2.pos);
         drawBall(target, ball.pos);
@@ -158,7 +200,7 @@ public:
         text.setCharacterSize(24);
         text.setFillColor(sf::Color::White);
         if (!round_active) {
-            text.setString("Press Space button to begin !");
+            text.setString("Press Space bar to begin !");
             target.draw(text);
         }
 
@@ -219,7 +261,8 @@ private:
         tex.draw(shape);
     }
 
-    void drawMiddleLine(sf::RenderTexture& tex) {
+    void drawMiddleLine(sf::RenderTexture& tex)
+    {
         sf::RectangleShape shape(sf::Vector2f(2, game_height));
         shape.setPosition(game_width/2, 0);
         shape.setFillColor(sf::Color::White);
@@ -229,7 +272,7 @@ private:
 
     void drawBall(sf::RenderTexture& tex, vec2& pos)
     {
-        sf::RectangleShape shape(sf::Vector2f(Ball::width, Ball::height));
+        sf::CircleShape shape(Ball::width / 2);
         shape.setPosition(pos.x, pos.y);
         shape.setFillColor(sf::Color::White);
 

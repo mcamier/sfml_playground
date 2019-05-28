@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <math.h>
 #include <list>
 #include <string>
 #include <SFML/Graphics.hpp>
@@ -23,7 +24,7 @@ int main()
     sf::Sprite sprite;
 
     // Set window
-    sf::RenderWindow window(sf::VideoMode(600, 600), "ONG");
+    sf::RenderWindow window(sf::VideoMode(800, 800), "ONG");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 
@@ -53,7 +54,7 @@ int main()
         screen_mgr.render(render_tex);
         sprite = Sprite(render_tex.getTexture());
         RenderStates rdr_state = sf::RenderStates::Default;
-        rdr_state.transform.scale(3, 3, 0, 0);
+        rdr_state.transform.scale(4, 4, 0, 0);
         window.draw(sprite, rdr_state);
         window.display();
     }

@@ -4,8 +4,8 @@
 class Ball {
 
 public:
-    static const int speed = 200;
-    static const int radius = 3;
+    static const int speed = 40;
+    static const int radius = 4;
 
     vec2 pos;
     vec2 pos_dest;

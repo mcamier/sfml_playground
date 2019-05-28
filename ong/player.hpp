@@ -6,13 +6,13 @@
 class Player {
 
 public:
-    // degree per second
-    static const int speed = 90;
-    static const int arc_paddle_angle_half = 4;
+
+    static const int speed = 75; // degree per second
 
     int score;
     float angle;
     float angle_dest;
+    float paddle_length = 25;
 
     Player() : angle(0), score(0) {}
 

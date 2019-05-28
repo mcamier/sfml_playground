@@ -74,6 +74,7 @@ void ScreenManager::render(RenderTexture& target)
     RenderStates rdr_state = sf::RenderStates::Default;
     rdr_state.transform.scale(1, -1, 100, 100);
     render_tex.create(200, 200);
+    render_tex.clear(sf::Color::Black);
 
     auto itr = screenList.rbegin();
     while (itr!=screenList.rend()) {

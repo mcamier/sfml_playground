@@ -18,6 +18,12 @@ enum players_enum {
   p1, p2
 };
 
+enum game_mode {
+  one_player_vs_ai,
+  one_player,
+  two_players
+};
+
 class GameScreen : public Screen {
 
 private:
@@ -70,14 +76,9 @@ public:
         if (!round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
             round_active = true;
             ball.vector = angleToVec(180);
+            srand((unsigned)elapsedSec);
         } else if (round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-            ball = Ball(0, 0);
-            ball.vector = angleToVec(180);
-        }
-
-        bool debugger = false;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-            debugger = true;
+            resetBall();
         }
 
         if (round_active) {
@@ -87,7 +88,7 @@ public:
             ball.pos_dest.y = ball.pos.y+(ball.vector.y*elapsedSec*ballSpeed);
 
             if(ballLost(ball)) {
-                // resetBall();
+                resetBall();
                 // resetPaddles();
 
                 // update score
@@ -101,6 +102,9 @@ public:
                 // apply ball new position
                 // update ball vector
                 std::cout << "ball collide" << std::endl;
+                ball.vector.x = -ball.vector.x;
+                ball.vector.y = -ball.vector.y;
+                ball.resetDest();
             }
             //else if (ballCollideWithPaddle(ball, p2)) {}
             else {
@@ -116,17 +120,23 @@ public:
                 p1.angle += elapsedSec*Player::speed;
             }
 
-            /*float decimal = p1.angle-(int) p1.angle;
+            float decimal = p1.angle-(int) p1.angle;
             if (p1.angle>=360) {
-                p1.angle = (int) p1.angle%360;
+                p1.angle = (int) p1.angle%360;  
                 p1.angle += decimal;
-            }*/
+            }
         }
+    }
+
+    void resetBall() {
+        this->ball = Ball(0, 0);
+        int start_angle = rand() % 360;
+        this->ball.vector = angleToVec(start_angle);
     }
 
     bool ballLost(Ball& ball)
     {
-        return isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y, game_width/2, game_height/2, arena_defeat_radius);
+        return isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y, 0, 0, arena_defeat_radius);
     }
 
     bool isOutsideCircle(float x, float y, float circle_x, float circle_y, float radius)
@@ -181,38 +191,20 @@ public:
 
         drawBall(target, ball.pos);
         drawPlayer(target, p1);
-
+        
+        std::string str = "player 1: " + std::to_string(p1.angle);
+        std::cout << str << std::endl;
     }
 
 private:
     void drawPlayer(sf::RenderTexture& tex, Player& player)
     {
-        float arc_half_angle = toDeg(player.paddle_length / arena_radius) / 2;
         sf::CircleShape shape(3);
         shape.setFillColor(sf::Color::White);
 
-        for(float i = -arc_half_angle; i < 2 * arc_half_angle ; i = i + 4) {
-            vec2 p = getPointOnArc(player.angle + i, arena_radius);
-            shape.setPosition(p.x, p.y);
-            tex.draw(shape);
-        }
-        /*vec2 p = getPointOnArc(player.angle - 4, arena_radius);
-        vec2 p1 = getPointOnArc(player.angle - 2, arena_radius);
-        vec2 p2 = getPointOnArc(player.angle, arena_radius);
-        vec2 p3 = getPointOnArc(player.angle + 2, arena_radius);
-        vec2 p4 = getPointOnArc(player.angle + 4, arena_radius);*/
-
-
-        /*shape.setPosition(p.x, p.y);
+        vec2 p = getPointOnArc(player.angle, arena_radius);
+        shape.setPosition(p.x + game_width/2, p.y + game_height/2);
         tex.draw(shape);
-        shape.setPosition(p1.x, p1.y);
-        tex.draw(shape);
-        shape.setPosition(p2.x, p2.y);
-        tex.draw(shape);
-        shape.setPosition(p3.x, p3.y);
-        tex.draw(shape);
-        shape.setPosition(p4.x, p4.y);
-        tex.draw(shape);*/
     }
 
     vec2 getPointOnArc(float angle, float radius)
@@ -220,10 +212,6 @@ private:
         vec2 v = angleToVec(angle);
         v.y = -v.y;
         v.scale(radius);
-
-        //relative to the center of the arena
-        v.x += game_width/2;
-        v.y += game_height/2;
         return v;
     }
 

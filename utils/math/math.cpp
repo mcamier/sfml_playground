@@ -12,15 +12,22 @@ double toDeg(double rad)
     return rad*180.0/PI;
 }
 
-vec2 angleToVec(double deg)
+vec2f angleToVec(double deg)
 {
     double rad = toRad(deg);
-    return vec2(cos(rad), sin(rad));
+    return vec2f(cos(rad), sin(rad));
 }
 
-vec2 interpolate(vec2 a, vec2 b, float t)
+template<>
+vec2i interpolate(vec2i a, vec2i b, float t)
 {
-    return vec2(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
+    return vec2i(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
+}
+
+template<>
+vec2f interpolate(vec2f a, vec2f b, float t)
+{
+    return vec2f(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
 }
 
 
@@ -41,38 +48,4 @@ double square(double x) {
 
 int clamp(int x, int min, int max) {
     return (x < min) ? min : (x > max) ? max : x;
-}
-
-float vectorToDegrees(vec2 v)
-{
-    if (v.x==0) {
-        if (v.y>0) {
-            return 90;
-        }
-        else if (v.y<0) {
-            return 270;
-        }
-        else {
-            return 0;
-        }
-    }
-    else if (v.y==0) {
-        if (v.x>=0) {
-            return 0;
-        }
-        else {
-            return 180;
-        }
-    }
-    else {
-        float result = atanf(v.y/v.x) * 180 / PI;
-        if(v.x < 0 && v.y < 0) {
-            result += 180;
-        } else if(v.x < 0) {
-            result += 180;
-        } else if(v.y < 0) {
-            result += 270;
-        }
-        return result;
-    }
 }

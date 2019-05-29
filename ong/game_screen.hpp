@@ -8,11 +8,10 @@
 #include <SFML/System.hpp>
 #include <SFML/Audio.hpp>
 
-#include "player.hpp"
 #include "../utils/screen/screen.hpp"
 #include "../utils/math/math.hpp"
+#include "player.hpp"
 #include "ball.hpp"
-#include "../pong/game_screen.hpp"
 
 enum players_enum {
   p1, p2
@@ -168,7 +167,7 @@ public:
         float phi, min, max;
         phi = min = max = .0f;
 
-        vec2 p(ball.pos_dest.x, ball.pos_dest.y);
+        vec2f p(ball.pos_dest.x, ball.pos_dest.y);
         p.normalize();
         p.y = -p.y;
         phi = vectorToDegrees(p);
@@ -199,9 +198,6 @@ public:
 
         drawBall(target, ball.pos);
         drawPlayer(target, p1);
-
-        std::string str = "player 1: "+std::to_string(p1.angle);
-        std::cout << str << std::endl;
     }
 
 private:
@@ -219,9 +215,9 @@ private:
 
         for(int i = 0; i<segment_count; i++) {
             float angle = min_angle+i*segment_arc_angle;
-            vec2 p = getPointOnArc(angle, arena_radius);
+            vec2f p = getPointOnArc(angle, arena_radius);
 
-            vec2 v=angleToVec(angle);
+            vec2f v=angleToVec(angle);
             //v.x = -v.x;
             //v.y = -v.y;
             v.x = -v.x*cos_half_pi + v.y*sin_half_pi;
@@ -245,15 +241,15 @@ private:
         tex.draw(shape);*/
     }
 
-    vec2 getPointOnArc(float angle, float radius)
+    vec2f getPointOnArc(float angle, float radius)
     {
-        vec2 v = angleToVec(angle);
+        vec2f v = angleToVec(angle);
         v.y = -v.y;
         v.scale(radius);
         return v;
     }
 
-    void drawBall(sf::RenderTexture& tex, vec2& pos)
+    void drawBall(sf::RenderTexture& tex, vec2f& pos)
     {
         sf::CircleShape shape(Ball::radius);
         shape.setPosition(pos.x+game_width/2, pos.y+game_height/2);

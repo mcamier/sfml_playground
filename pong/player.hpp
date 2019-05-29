@@ -1,7 +1,7 @@
 #ifndef FOOBAR_PLAYER_HPP
 #define FOOBAR_PLAYER_HPP
 
-#include "../utils/math/vec2.hpp"
+#include "../utils/math/vector.hpp"
 
 class Player {
 
@@ -11,16 +11,16 @@ public:
     static const int speed = 200;
 
     int score;
-    vec2 pos;
-    vec2 pos_dest;
+    vec2f pos;
+    vec2f pos_dest;
 
     Player() {}
 
-    Player(vec2 pos)
+    Player(vec2f pos)
             :pos(pos), pos_dest(pos), score(0) { }
 
     Player(float x, float y)
-            :pos(vec2(x, y)), pos_dest(vec2(x, y)), score(0) { }
+            :pos(vec2f(x, y)), pos_dest(vec2f(x, y)), score(0) { }
 
     void setDestAsNewPos() {
         pos.x = pos_dest.x;

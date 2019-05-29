@@ -4,7 +4,7 @@
 #include <iostream>
 #include <SFML/System.hpp>
 
-#include "../utils/math/vec2.hpp"
+#include "../utils/math/vector.hpp"
 #include "../utils/math/math.hpp"
 #include "../utils/screen/screen_manager.hpp"
 

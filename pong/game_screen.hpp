@@ -80,7 +80,7 @@ public:
             ball.vector = angleToVec(160);
         }
         else if (round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-            ball.pos = vec2(game_width/2, game_height/2);
+            ball.pos = vec2f(game_width/2, game_height/2);
             ball.pos_dest = ball.pos;
             ball.vector = angleToVec(160);
         }
@@ -217,9 +217,9 @@ private:
 
     void resetBallAndPlayersPosition(Ball& ball, Player& player1, Player& player2)
     {
-        player1.pos = vec2(paddle_p1_x_axis, game_height/2);
+        player1.pos = vec2f(paddle_p1_x_axis, game_height/2);
         player1.pos_dest = player1.pos;
-        player2.pos = vec2(paddle_p2_x_axis, game_height/2);
+        player2.pos = vec2f(paddle_p2_x_axis, game_height/2);
         player2.pos_dest = player2.pos;
         ball = Ball(game_width/2, game_height/2);
     }
@@ -235,16 +235,16 @@ private:
         return false;
     }
 
-    bool isMoveAllowed(vec2& paddle_pos)
+    bool isMoveAllowed(vec2f& paddle_pos)
     {
-        vec2 area(game_width, game_height);
-        vec2 paddle_right_corner(paddle_pos.x+Player::width, paddle_pos.y+Player::height);
+        vec2f area(game_width, game_height);
+        vec2f paddle_right_corner(paddle_pos.x+Player::width, paddle_pos.y+Player::height);
 
         return isInside(paddle_pos, area) &&
                 isInside(paddle_right_corner, area);
     }
 
-    bool isInside(vec2& pos, vec2& area)
+    bool isInside(vec2f& pos, vec2f& area)
     {
         return !(pos.x<0 ||
                 pos.y<0 ||
@@ -252,7 +252,7 @@ private:
                 pos.y>area.y);
     }
 
-    void drawPlayer(sf::RenderTexture& tex, vec2& pos)
+    void drawPlayer(sf::RenderTexture& tex, vec2f& pos)
     {
         sf::RectangleShape shape(sf::Vector2f(Player::width, Player::height));
         shape.setPosition(pos.x, pos.y);
@@ -270,7 +270,7 @@ private:
         tex.draw(shape);
     }
 
-    void drawBall(sf::RenderTexture& tex, vec2& pos)
+    void drawBall(sf::RenderTexture& tex, vec2f& pos)
     {
         sf::CircleShape shape(Ball::width / 2);
         shape.setPosition(pos.x, pos.y);

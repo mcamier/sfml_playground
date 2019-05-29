@@ -23,6 +23,7 @@ int main()
 {
     sf::Event event;
     sf::Clock clock;
+    sf::Sprite sprite;
 
     // Set window
     sf::RenderWindow window(sf::VideoMode(800, 600), "PONG");
@@ -48,7 +49,11 @@ int main()
         screen_mgr.update(elapsed);
 
         window.clear(sf::Color::Black);
-        screen_mgr.render(window);
+        RenderTexture render_tex;
+        render_tex.create(800, 600);
+        screen_mgr.render(render_tex);
+        sprite = Sprite(render_tex.getTexture());
+        window.draw(sprite);
         window.display();
     }
     return 0;

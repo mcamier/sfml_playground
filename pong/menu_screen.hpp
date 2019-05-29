@@ -4,7 +4,7 @@
 #include <iostream>
 #include <SFML/System.hpp>
 
-#include "../utils/math/vec2.hpp"
+#include "../utils/math/vector.hpp"
 #include "../utils/math/math.hpp"
 #include "../utils/screen/screen_manager.hpp"
 
@@ -15,12 +15,12 @@ private:
 
     sf::Font font;
     sf::Text title;
-    vec2 title_from = vec2(280, -70);
-    vec2 title_to = vec2(280, 180);
+    vec2f title_from = vec2f(280, -70);
+    vec2f title_to = vec2f(280, 180);
 
     sf::Text press_start;
-    vec2 press_start_from = vec2(260, 600);
-    vec2 press_start_to = vec2(260, 520);
+    vec2f press_start_from = vec2f(260, 600);
+    vec2f press_start_to = vec2f(260, 520);
 
     sf::Time time;
 

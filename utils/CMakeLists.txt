@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(utils_src
         math/mat3.hpp
         math/mat3.cpp
-        math/vec2.hpp
-        math/vec2.cpp
+        math/vector.hpp
         math/math.hpp
         math/math.cpp
         screen/screen.cpp

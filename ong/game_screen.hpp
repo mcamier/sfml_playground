@@ -61,10 +61,7 @@ public:
             this->isLoaded = false;
             return false;
         }
-
-        ball = Ball(game_width/2-5, game_height/2-25);
         this->isLoaded = true;
-
         return this->isLoaded;
     }
 
@@ -76,8 +73,9 @@ public:
         if (!round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
             round_active = true;
             ball.vector = angleToVec(180);
-            srand((unsigned)elapsedSec);
-        } else if (round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+            srand((unsigned) elapsedSec);
+        }
+        else if (round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
             resetBall();
         }
 
@@ -87,68 +85,77 @@ public:
             ball.pos_dest.x = ball.pos.x+(ball.vector.x*elapsedSec*ballSpeed);
             ball.pos_dest.y = ball.pos.y+(ball.vector.y*elapsedSec*ballSpeed);
 
-            if(ballLost(ball)) {
+            if (ballLost(ball)) {
+                collision_count = 0;
                 resetBall();
                 // resetPaddles();
 
                 // update score
-                if(last_hit_by == players_enum::p1) {
+                if (last_hit_by==players_enum::p1) {
                     p1.score++;
-                } else if(last_hit_by == players_enum::p2){
+                }
+                else if (last_hit_by==players_enum::p2) {
                     p2.score++;
                 }
             }
             if (ballCollideWithPaddle(ball, p1)) {
-                // apply ball new position
-                // update ball vector
-                std::cout << "ball collide" << std::endl;
+                collision_count++;
                 ball.vector.x = -ball.vector.x;
                 ball.vector.y = -ball.vector.y;
                 ball.resetDest();
             }
-            //else if (ballCollideWithPaddle(ball, p2)) {}
+                //else if (ballCollideWithPaddle(ball, p2)) {}
             else {
-                // no collision, allow the move
                 ball.setDestAsNewPos();
             }
 
             // player 1 move handling
+            int speed = Player::speed;
+            /*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl)
+                    || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl)) {
+                speed = Player::low_speed;
+            }*/
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-                p1.angle -= elapsedSec*Player::speed;
+                p1.angle -= elapsedSec*speed;
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-                p1.angle += elapsedSec*Player::speed;
+                p1.angle += elapsedSec*speed;
             }
 
-            float decimal = p1.angle-(int) p1.angle;
             if (p1.angle>=360) {
-                p1.angle = (int) p1.angle%360;  
-                p1.angle += decimal;
+                p1.angle = (int) p1.angle%360;
+            }
+            else if (p1.angle<0) {
+                p1.angle = 360+p1.angle;
             }
         }
     }
 
-    void resetBall() {
+    void resetBall()
+    {
         this->ball = Ball(0, 0);
-        int start_angle = rand() % 360;
-        this->ball.vector = angleToVec(start_angle);
+        this->ball.vector = angleToVec(180);
     }
 
     bool ballLost(Ball& ball)
     {
-        return isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y, 0, 0, arena_defeat_radius);
+        return isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y, arena_defeat_radius);
     }
 
-    bool isOutsideCircle(float x, float y, float circle_x, float circle_y, float radius)
+    bool isOutsideCircle(float x, float y, float radius)
     {
-        float delta_x = x - circle_x;
-        float delta_y = y - circle_y;
-        return (square(delta_x) + square(delta_y)) > square(radius);
+        return ((x*x)+(y*y))>square(radius);
+    }
+
+    bool isInsideCircle(float x, float y, float radius)
+    {
+        return ((x*x)+(y*y))<=square(radius);
     }
 
     bool ballCollideWithPaddle(Ball& ball, Player& player)
     {
-        if(isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y, 0, 0, arena_radius - Ball::radius)) {
+        if (isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y, arena_radius-Ball::radius) &&
+                isInsideCircle(ball.pos_dest.x, ball.pos_dest.y, arena_radius)) {
             if (collideWithArc(ball, player)) {
                 return true;
             }
@@ -156,20 +163,21 @@ public:
         return false;
     }
 
-    bool collideWithArc(Ball& ball, Player& player) {
+    bool collideWithArc(Ball& ball, Player& player)
+    {
         float phi, min, max;
         phi = min = max = .0f;
 
-        vec2 p (ball.pos_dest.x, ball.pos_dest.y);
+        vec2 p(ball.pos_dest.x, ball.pos_dest.y);
         p.normalize();
         p.y = -p.y;
         phi = vectorToDegrees(p);
 
-        float arc_half_angle = toDeg(player.paddle_length / arena_radius) / 2;
-        min = player.angle - arc_half_angle;
-        max = player.angle + arc_half_angle;
+        int half_angle = player.paddle_arc/2;
+        min = player.angle-half_angle;
+        max = player.angle+half_angle;
 
-        bool res = phi >= min && phi <= max;
+        bool res = phi>=min && phi<=max;
         return res;
     }
 
@@ -191,20 +199,50 @@ public:
 
         drawBall(target, ball.pos);
         drawPlayer(target, p1);
-        
-        std::string str = "player 1: " + std::to_string(p1.angle);
+
+        std::string str = "player 1: "+std::to_string(p1.angle);
         std::cout << str << std::endl;
     }
 
 private:
     void drawPlayer(sf::RenderTexture& tex, Player& player)
     {
-        sf::CircleShape shape(3);
+        static float cos_half_pi = -0.999624217;
+        static float sin_half_pi = -0.027412134;
+        int segment_count = 3;
+        float segment_arc_angle = (float) player.paddle_arc / segment_count;
+        float segment_length = toRad(segment_arc_angle) * arena_radius;
+        int min_angle = player.angle - player.paddle_arc/2;
+
+        sf::RectangleShape rect(sf::Vector2f(segment_length, 4));
+        rect.setFillColor(sf::Color::Red);
+
+        for(int i = 0; i<segment_count; i++) {
+            float angle = min_angle+i*segment_arc_angle;
+            vec2 p = getPointOnArc(angle, arena_radius);
+
+            vec2 v=angleToVec(angle);
+            //v.x = -v.x;
+            //v.y = -v.y;
+            v.x = -v.x*cos_half_pi + v.y*sin_half_pi;
+            v.y = -v.x*sin_half_pi - v.y*cos_half_pi;
+
+            rect.setPosition(p.x + game_width / 2, p.y + game_height / 2);
+            float pouet = vectorToDegrees(v);
+            rect.rotate(pouet);
+            tex.draw(rect);
+        }
+
+        /*sf::CircleShape shape(3);
         shape.setFillColor(sf::Color::White);
 
-        vec2 p = getPointOnArc(player.angle, arena_radius);
-        shape.setPosition(p.x + game_width/2, p.y + game_height/2);
+        vec2 p = getPointOnArc(player.angle-half_angle, arena_radius);
+        shape.setPosition(p.x+game_width/2, p.y+game_height/2);
         tex.draw(shape);
+
+        p = getPointOnArc(player.angle+half_angle, arena_radius);
+        shape.setPosition(p.x+game_width/2, p.y+game_height/2);
+        tex.draw(shape);*/
     }
 
     vec2 getPointOnArc(float angle, float radius)
@@ -218,7 +256,7 @@ private:
     void drawBall(sf::RenderTexture& tex, vec2& pos)
     {
         sf::CircleShape shape(Ball::radius);
-        shape.setPosition(pos.x + game_width / 2, pos.y + game_height / 2);
+        shape.setPosition(pos.x+game_width/2, pos.y+game_height/2);
         shape.setFillColor(sf::Color::White);
         tex.draw(shape);
     }

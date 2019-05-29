@@ -15,6 +15,8 @@
 #include "menu_screen.hpp"
 #include "../utils/screen/screen_manager.hpp"
 
+#include "manifest.hpp"
+
 using namespace std;
 
 int main()

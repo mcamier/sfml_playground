@@ -39,6 +39,10 @@ double square(double x) {
     return x * x;
 }
 
+int clamp(int x, int min, int max) {
+    return (x < min) ? min : (x > max) ? max : x;
+}
+
 float vectorToDegrees(vec2 v)
 {
     if (v.x==0) {

@@ -17,6 +17,8 @@ vec2 interpolate(vec2 a, vec2 b, float t);
 template<typename T>
 T square(T x);
 
+int clamp(int x, int min, int max);
+
 float vectorToDegrees(vec2 v);
 
 #endif //FOOBAR_MATH_HPP

@@ -33,6 +33,21 @@
                 "cmake generate debug"
             ],
             "problemMatcher": []
+        },
+        {
+            "label": "build & run ONG",
+            "type": "shell",
+            "command": "cmake --build . --config Debug --target ong && ./ong/ong",
+            "options": {
+                "cwd": "${workspaceRoot}/cmake-build-debug"
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "dependsOn": [
+                "cmake generate debug"
+            ],
+            "problemMatcher": []
         }
     ]
 }

@@ -1,0 +1,7 @@
+{
+    "editor.fontSize": 13,
+    "editor.cursorStyle": "block",
+    "editor.autoClosingBrackets": "always",
+    "editor.autoClosingQuotes": "always",
+    "editor.formatOnSave": true
+}

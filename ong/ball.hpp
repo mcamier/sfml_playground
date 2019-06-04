@@ -1,36 +1,32 @@
 #ifndef FOOBAR_BALL_HPP
 #define FOOBAR_BALL_HPP
 
-#include "../utils/math/vector.hpp"
+#include "../utils/math/vec2.hpp"
 
 class Ball {
+ public:
+  static const int speed = 40;
+  static const int radius = 4;
 
-public:
-    static const int speed = 40;
-    static const int radius = 4;
+  vec2f pos;
+  vec2f pos_dest;
+  vec2f vector = vec2f(0, 0);
 
-    vec2f pos;
-    vec2f pos_dest;
-    vec2f vector = vec2f(0, 0);
+  Ball() {}
 
-    Ball() {}
+  Ball(vec2f pos) : pos(pos), pos_dest(pos) {}
 
-    Ball(vec2f pos)
-        :pos(pos), pos_dest(pos) { }
+  Ball(float x, float y) : pos(vec2f(x, y)), pos_dest(vec2f(x, y)) {}
 
-    Ball(float x, float y)
-            :pos(vec2f(x, y)), pos_dest(vec2f(x, y)) { }
+  void setDestAsNewPos() {
+    pos.x = pos_dest.x;
+    pos.y = pos_dest.y;
+  }
 
-    void setDestAsNewPos() {
-        pos.x = pos_dest.x;
-        pos.y = pos_dest.y;
-    }
-
-    void resetDest() {
-        pos_dest.x = pos.x;
-        pos_dest.y = pos.y;
-    }
-
+  void resetDest() {
+    pos_dest.x = pos.x;
+    pos_dest.y = pos.y;
+  }
 };
 
-#endif //FOOBAR_BALL_HPP
+#endif  // FOOBAR_BALL_HPP

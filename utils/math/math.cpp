@@ -2,75 +2,66 @@
 
 #include <math.h>
 
-double toRad(double degree)
-{
-    return degree*PI/180.0;
+double toRad(double degree) { return degree * PI / 180.0; }
+
+double toDeg(double rad) { return rad * 180.0 / PI; }
+
+vec2f angleToVec(double deg) {
+  double rad = toRad(deg);
+  return vec2f(cos(rad), sin(rad));
 }
 
-double toDeg(double rad)
-{
-    return rad*180.0/PI;
+template <>
+vec2i interpolate(vec2i a, vec2i b, float t) {
+  return vec2i(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y));
 }
 
-vec2f angleToVec(double deg)
-{
-    double rad = toRad(deg);
-    return vec2f(cos(rad), sin(rad));
+template <>
+vec2f interpolate(vec2f a, vec2f b, float t) {
+  return vec2f(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y));
 }
 
-template<>
-vec2i interpolate(vec2i a, vec2i b, float t)
-{
-    return vec2i(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
-}
-
-template<>
-vec2f interpolate(vec2f a, vec2f b, float t)
-{
-    return vec2f(a.x+t*(b.x-a.x), a.y+t*(b.y-a.y));
-}
-
-
-template<>
+template <>
 int square(int x) {
-    return x * x;
+  return x * x;
 }
 
-template<>
+template <>
 float square(float x) {
-    return x * x;
+  return x * x;
 }
 
-template<>
+template <>
 double square(double x) {
-    return x * x;
+  return x * x;
 }
 
 int clamp(int x, int min, int max) {
-    return (x < min) ? min : (x > max) ? max : x;
+  return (x < min) ? min : (x > max) ? max : x;
 }
 
 vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p) {
-    vec3f bary;
-    vec3f v0 = b - a;
-    vec3f v1 = c - a;
-    vec3f v2 = p - a;
+  vec3f bary;
+  vec3f v0 = b - a;
+  vec3f v1 = c - a;
+  vec3f v2 = p - a;
 
-    float d00 = vec3f::dot(v0, v0);
-    float d11 = vec3f::dot(v1, v1);
-    float d10 = vec3f::dot(v1, v0);
-    float d01 = vec3f::dot(v0, v1);
+  float d00 = vec3f::dot(v0, v0);
+  float d11 = vec3f::dot(v1, v1);
+  float d10 = vec3f::dot(v1, v0);
+  float d01 = vec3f::dot(v0, v1);
 
-    float d20 = vec3f::dot(v2, v0);
-    float d21 = vec3f::dot(v2, v1);
+  float d20 = vec3f::dot(v2, v0);
+  float d21 = vec3f::dot(v2, v1);
 
-    // use cramer's rule to resolve the equations system
+  // use cramer's rule to resolve the equations system
 
-    // compute the determinant of the denominator for the cramer's rule equation system
-    float denom = d00 * d11 - d10 * d01;
-    bary.y = (d20*d11-d10*d21) / denom;
-    bary.z = (d00*d21-d20*d01) / denom;
-    bary.x = 1 - (bary.y + bary.z);
+  // compute the determinant of the denominator for the cramer's rule equation
+  // system
+  float denom = d00 * d11 - d10 * d01;
+  bary.y = (d20 * d11 - d10 * d21) / denom;
+  bary.z = (d00 * d21 - d20 * d01) / denom;
+  bary.x = 1 - (bary.y + bary.z);
 
-    return bary;
+  return bary;
 }

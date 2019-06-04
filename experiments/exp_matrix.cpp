@@ -16,7 +16,7 @@ void print_vector(const vec3f& v) {
 
 bool testPointInsideTriangle(const vec3f& a, const vec3f& b, const vec3f& c, const vec3f& p) {
     vec3f weight = barycentric(a,b,c,p);
-    return (weight.x >= .0f && weight.y >= .0f && weight.x+weight.y<=1.0f);
+    return (weight.y >= .0f && weight.z >= .0f && weight.y+weight.z<=1.0f);
 }
 
 int main(int argc, char* argv[]) {
@@ -46,15 +46,22 @@ int main(int argc, char* argv[]) {
     print_vector(v6);
 
     //---------------------------------
-    vec3f a(1, 0, 0);
-    vec3f b(0, 1, 0);
-    vec3f c(0, 0, 1);
+    vec3f a(3, 3, 0);
+    vec3f b(0, 0, 0);
+    vec3f c(6, 0, 0);
     vec3f p(.5f, .5f, 1.0f);
 
-    vec3f claude = barycentric(a, b, c, p);
-    cout << "barycenter= ";
-    print_vector(claude);
-    cout << "test p in triangle: " << testPointInsideTriangle(a,b,c,p) << endl;
+    cout << "barycenter vec3f(0, 3, 0)= ";
+    print_vector(barycentric(a,b,c,vec3f(0, 3, 0)));
+
+
+    cout << "barycenter vec3f(3, -3, 0)= ";
+    print_vector(barycentric(a,b,c,vec3f(3, -3, 0)));
+
+    cout << "barycenter vec3f(3, 3, 2)= ";
+    print_vector(barycentric(a,b,c,vec3f(3, 3, 2)));
+
+    cout << testPointInsideTriangle(a,b,c,vec3f(3, 3, 2));
 
     plane pl;
     pl.p = vec3f(0, 0, 0);

@@ -68,9 +68,9 @@ vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p) {
 
     // compute the determinant of the denominator for the cramer's rule equation system
     float denom = d00 * d11 - d10 * d01;
-    bary.x = (d20*d11-d10*d21) / denom;
-    bary.y = (d00*d21-d20*d01) / denom;
-    bary.z = 1 - (bary.x + bary.y);
+    bary.y = (d20*d11-d10*d21) / denom;
+    bary.z = (d00*d21-d20*d01) / denom;
+    bary.x = 1 - (bary.y + bary.z);
 
     return bary;
 }

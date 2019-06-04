@@ -8,7 +8,6 @@ class Player {
   players player_id;
   int score;
   int angle;
-  int angle_dest;
   int paddle_arc;
 
   Player(players p) {
@@ -19,12 +18,15 @@ class Player {
     }
     this->player_id = p;
     this->paddle_arc = default_player_paddle_arc;
-    this->angle_dest = this->angle;
   }
 
-  void setDestAsNewPos() { angle = angle_dest; }
-
-  void resetDest() { angle_dest = angle; }
+  void clampAngle() {
+    if (this->angle >= 360) {
+      this->angle = this->angle % 360;
+    } else if (angle < 0) {
+      this->angle = 360 + this->angle;
+    }
+  }
 
   void update(sf::Time& elapsedTime) {}
 };

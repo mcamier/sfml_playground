@@ -9,7 +9,6 @@ set(ong_src
         ball.hpp
         main.cpp
         player.hpp
-        menu_screen.hpp
         game_screen.hpp)
 
 add_custom_command(OUTPUT manifest.cpp manifest.hpp

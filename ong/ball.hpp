@@ -2,28 +2,23 @@
 #define FOOBAR_BALL_HPP
 
 #include "../utils/math/vec2.hpp"
+#include "header.hpp"
 
 class Ball {
  public:
   vec2f pos;
   vec2f pos_dest;
-  vec2f vector = vec2f(0, 0);
-  int speed;
-  int radius;
+  vec2f vector = vec2f(-1, 0);
+  int speed = default_ball_speed;
+  int radius = default_ball_radius;
+  // By default, player one have to hit the ball first
+  players last_hit_by = players::p2;
 
   Ball() {}
 
-  Ball(vec2f pos)
-      : pos(pos),
-        pos_dest(pos),
-        speed(default_ball_speed),
-        radius(default_ball_radius) {}
+  Ball(vec2f pos) : pos(pos), pos_dest(pos) {}
 
-  Ball(float x, float y)
-      : pos(vec2f(x, y)),
-        pos_dest(vec2f(x, y)),
-        speed(default_ball_speed),
-        radius(default_ball_radius) {}
+  Ball(float x, float y) : pos(vec2f(x, y)), pos_dest(vec2f(x, y)) {}
 
   void setDestAsNewPos() {
     pos.x = pos_dest.x;

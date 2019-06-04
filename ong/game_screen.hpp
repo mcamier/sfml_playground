@@ -24,13 +24,15 @@ class GameScreen : public Screen {
 
   Player p1 = Player(players::p1);
   Player p2 = Player(players::p2);
-  Ball ball = Ball(0, 0);
-  players last_hit_by = players::p2;
+  Ball balls[ball_count_max];
   int collision_count = 0;
   int ball_count = 1;
 
  public:
-  GameScreen() { this->transitionDurationSec = 0.0f; }
+  GameScreen() {
+    this->transitionDurationSec = 0.0f;
+    balls[0] = Ball(0, 0);
+  }
 
   bool load() {
     if (!font.loadFromFile("PressStart2P.ttf")) {
@@ -41,6 +43,10 @@ class GameScreen : public Screen {
     return this->isLoaded;
   }
 
+  /**
+   * @brief  Update the Game screen
+   * @param  time: amount of elapsed time since the last update
+   */
   void update(const sf::Time& time) override {
     float elapsedSec = time.asSeconds();
 
@@ -48,55 +54,76 @@ class GameScreen : public Screen {
       return;
     }
 
-    // move the ball
-    float ballSpeed = ball.speed * (1 + (0.15f * collision_count));
-    ball.pos_dest.x = ball.pos.x + (ball.vector.x * elapsedSec * ballSpeed);
-    ball.pos_dest.y = ball.pos.y + (ball.vector.y * elapsedSec * ballSpeed);
+    for (int i = 0; i < ball_count; i++) {
+      Ball& ball = balls[0];
+      float ballSpeed = ball.speed * (1 + (0.15f * collision_count));
+      ball.pos_dest.x = ball.pos.x + (ball.vector.x * elapsedSec * ballSpeed);
+      ball.pos_dest.y = ball.pos.y + (ball.vector.y * elapsedSec * ballSpeed);
 
-    if (ballLost(ball)) {
-      collision_count = 0;
-      resetBall();
-      // resetPaddles();
-
-      // update score
-      if (last_hit_by == players::p1) {
-        p1.score++;
-      } else if (last_hit_by == players::p2) {
-        p2.score++;
+      if (ballLost(ball)) {
+        collision_count = 0;
+        resetBall();
+        // update scores
+        if (ball.last_hit_by == players::p1) {
+          p1.score++;
+        } else if (ball.last_hit_by == players::p2) {
+          p2.score++;
+        }
+      }
+      if (ballCollideWithPaddle(ball, p1)) {
+        collision_count++;
+        ball.vector.x = -ball.vector.x;
+        ball.vector.y = -ball.vector.y;
+        ball.resetDest();
+      }
+      // else if (ballCollideWithPaddle(ball, p2)) {}
+      else {
+        ball.setDestAsNewPos();
       }
     }
-    if (ballCollideWithPaddle(ball, p1)) {
-      collision_count++;
-      ball.vector.x = -ball.vector.x;
-      ball.vector.y = -ball.vector.y;
-      ball.resetDest();
-    }
-    // else if (ballCollideWithPaddle(ball, p2)) {}
-    else {
-      ball.setDestAsNewPos();
-    }
 
-    // player 1 move handling
-    /*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl)
-            || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl)) {
-        speed = Player::low_speed;
-    }*/
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
       p1.angle -= elapsedSec * default_player_speed;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
       p1.angle += elapsedSec * default_player_speed;
     }
-
-    if (p1.angle >= 360) {
-      p1.angle = (int)p1.angle % 360;
-    } else if (p1.angle < 0) {
-      p1.angle = 360 + p1.angle;
-    }
+    p1.clampAngle();
   }
 
+  /**
+   * @brief Handle inputs event
+   * @param  event: event to handle
+   * @retval false if the event should not be propagated to the underneath scene
+   */
+  bool handleEvent(const sf::Event& event) override {
+    if (event.type == sf::Event::KeyPressed &&
+        event.key.code == sf::Keyboard::Key::Space) {
+      if (!round_active) {
+        round_active = true;
+        resetBall();
+      } else {
+        resetBall();
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @brief  Render the game screen in the rendering target
+   * @param  target: rendering target
+   */
+  void render(sf::RenderTexture& target) override {
+    drawDebug(target);
+    drawBall(target, balls[0]);
+    drawPlayer(target, p1);
+  }
+
+ private:
   void resetBall() {
-    this->ball = Ball(0, 0);
-    this->ball.vector = angleToVec(180);
+    this->ball_count = 1;
+    this->balls[0] = Ball(0, 0);
+    this->balls[0].vector = angleToVec(180);
   }
 
   bool ballLost(Ball& ball) {
@@ -132,25 +159,6 @@ class GameScreen : public Screen {
     return res;
   }
 
-  bool handleEvent(const sf::Event& event) override {
-    if (event.type == sf::Event::KeyPressed &&
-        event.key.code == sf::Keyboard::Key::Space) {
-      if (!round_active) {
-        round_active = true;
-        ball.vector = angleToVec(180);
-      } else {
-        resetBall();
-      }
-    }
-  }
-
-  void render(sf::RenderTexture& target) override {
-    drawDebug(target);
-    drawBall(target, ball.pos);
-    drawPlayer(target, p1);
-  }
-
- private:
   void drawDebug(sf::RenderTexture& tex) {
     sf::RectangleShape vline(sf::Vector2f(1.f, game_height));
     vline.setPosition(game_width / 2, 0);

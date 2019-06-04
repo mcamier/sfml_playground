@@ -68,4 +68,13 @@ int main(int argc, char *argv[]) {
        << testPointIsOnPlane(pl, vec3f(1, 0, 3)) << endl;
   cout << "testPointIsOnPlane(pl, vec3f(1, 1, 3)) => "
        << testPointIsOnPlane(pl, vec3f(1, 1, 3)) << endl;
+
+  vec3f v11(2, 2, 0);
+  vec3f v12(2, 0, 0);
+  vec3f v13(0, 0, 0);
+  vec3f v14(0, 2, 0);
+  vec3f pts[4] = {v11, v12, v13, v14};
+  vec3f meanPt = mean(pts, 4);
+  cout << "mean point: ";
+  print_vector(meanPt);
 }

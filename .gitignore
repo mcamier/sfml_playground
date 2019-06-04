@@ -1,4 +1,5 @@
 cmake-build-*/
+build/
 .idea/
 .vscode/ipch/
 .vscode/launch.json

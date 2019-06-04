@@ -60,4 +60,6 @@ bool isInsideCircle(float x, float y, float radius);
 
 vec2f getPointOnArc(float angle, float radius);
 
+vec3f mean(vec3f pts[], int num_pts);
+
 #endif  // FOOBAR_MATH_HPP

@@ -28,6 +28,16 @@ class vec2 {
     this->y *= scalar;
   }
 
+  void operator+=(vec2<T> right) {
+    this->x += right.x;
+    this->y += right.y;
+  }
+
+  void operator-=(vec2<T> right) {
+    this->x -= right.x;
+    this->y -= right.y;
+  }
+
   static T dot(const vec2<T> v1, const vec2<T> v2) {
     return v1.x * v2.x + v1.y * v2.y;
   }

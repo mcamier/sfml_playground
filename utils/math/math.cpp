@@ -80,3 +80,13 @@ vec2f getPointOnArc(float angle, float radius) {
   v *= radius;
   return v;
 }
+
+vec3f mean(vec3f pts[], int num_pts) {
+  vec3f mean(0, 0, 0);
+  for (int i = 0; i < num_pts; i++) {
+    mean += pts[i];
+  }
+  mean *= 1.0f / (float)num_pts;
+
+  return mean;
+}

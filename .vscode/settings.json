@@ -3,5 +3,8 @@
     "editor.cursorStyle": "block",
     "editor.autoClosingBrackets": "always",
     "editor.autoClosingQuotes": "always",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "files.associations": {
+        "iostream": "cpp"
+    }
 }

@@ -49,3 +49,28 @@ double square(double x) {
 int clamp(int x, int min, int max) {
     return (x < min) ? min : (x > max) ? max : x;
 }
+
+vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p) {
+    vec3f bary;
+    vec3f v0 = b - a;
+    vec3f v1 = c - a;
+    vec3f v2 = p - a;
+
+    float d00 = vec3f::dot(v0, v0);
+    float d11 = vec3f::dot(v1, v1);
+    float d10 = vec3f::dot(v1, v0);
+    float d01 = vec3f::dot(v0, v1);
+
+    float d20 = vec3f::dot(v2, v0);
+    float d21 = vec3f::dot(v2, v1);
+
+    // use cramer's rule to resolve the equations system
+
+    // compute the determinant of the denominator for the cramer's rule equation system
+    float denom = d00 * d11 - d10 * d01;
+    bary.x = (d20*d11-d10*d21) / denom;
+    bary.y = (d00*d21-d20*d01) / denom;
+    bary.z = 1 - (bary.x + bary.y);
+
+    return bary;
+}

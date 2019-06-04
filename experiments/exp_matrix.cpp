@@ -1,5 +1,8 @@
 #include <iostream>
-#include "../utils/math/vector.hpp"
+#include "../utils/math/math.hpp"
+#include "../utils/math/vec2.hpp"
+#include "../utils/math/vec3.hpp"
+#include "../utils/math/plane.hpp"
 
 using namespace std;
 
@@ -9,31 +12,6 @@ void print_vector(const vec2f& v) {
 
 void print_vector(const vec3f& v) {
     cout << v.x << ", " << v.y << ", " << v.z << endl;
-}
-
-vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p) {
-    vec3f bary;
-    vec3f v0 = b - a;
-    vec3f v1 = c - a;
-    vec3f v2 = p - a;
-
-    float d00 = vec3f::dot(v0, v0);
-    float d11 = vec3f::dot(v1, v1);
-    float d10 = vec3f::dot(v1, v0);
-    float d01 = vec3f::dot(v0, v1);
-
-    float d20 = vec3f::dot(v2, v0);
-    float d21 = vec3f::dot(v2, v1);
-
-    // use cramer's rule to resolve the equations system
-
-    // compute the determinant of the denominator for the cramer's rule equation system
-    float denom = d00 * d11 - d10 * d01;
-    bary.x = (d20*d11-d10*d21) / denom;
-    bary.y = (d00*d21-d20*d01) / denom;
-    bary.z = 1 - (bary.x + bary.y);
-
-    return bary;
 }
 
 bool testPointInsideTriangle(const vec3f& a, const vec3f& b, const vec3f& c, const vec3f& p) {
@@ -78,9 +56,11 @@ int main(int argc, char* argv[]) {
     print_vector(claude);
     cout << "test p in triangle: " << testPointInsideTriangle(a,b,c,p) << endl;
 
-    vec3f p2(3, 3, 1);
-    cout << "test p2 in triangle: " << testPointInsideTriangle(a,b,c,p2) << endl;
+    plane pl;
+    pl.p = vec3f(0, 0, 0);
+    pl.n = vec3f(0, 1, 0);
 
-    return 0;
+    cout << "testPointIsOnPlane(pl, vec3f(1, 0, 3)) => " << testPointIsOnPlane(pl, vec3f(1, 0, 3)) << endl;
+    cout << "testPointIsOnPlane(pl, vec3f(1, 1, 3)) => " << testPointIsOnPlane(pl, vec3f(1, 1, 3)) << endl;
 
 }

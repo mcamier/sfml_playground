@@ -1,7 +1,8 @@
 #ifndef FOOBAR_MATH_HPP
 #define FOOBAR_MATH_HPP
 
-#include "vector.hpp"
+#include "vec2.hpp"
+#include "vec3.hpp"
 #include "math.h"
 
 #define TWO_PI 6.283185307
@@ -55,5 +56,7 @@ float vectorToDegrees(vec2<T> v) {
         return result;
     }
 }
+
+vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p);
 
 #endif //FOOBAR_MATH_HPP

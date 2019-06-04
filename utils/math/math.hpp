@@ -5,13 +5,13 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 
-#define TWO_PI 6.283185307
-#define PI 3.141592654
 #define HALF_PI 1.570796327
+#define PI 3.141592654
+#define TWO_PI 6.283185307
 
-double toRad(double degree);
+double toRad(int degree);
 
-double toDeg(double rad);
+int toDeg(double rad);
 
 vec2f angleToVec(double deg);
 
@@ -53,5 +53,11 @@ float vectorToDegrees(vec2<T> v) {
 }
 
 vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p);
+
+bool isOutsideCircle(float x, float y, float radius);
+
+bool isInsideCircle(float x, float y, float radius);
+
+vec2f getPointOnArc(float angle, float radius);
 
 #endif  // FOOBAR_MATH_HPP

@@ -2,9 +2,9 @@
 
 #include <math.h>
 
-double toRad(double degree) { return degree * PI / 180.0; }
+double toRad(int degree) { return degree * PI / 180.0; }
 
-double toDeg(double rad) { return rad * 180.0 / PI; }
+int toDeg(double rad) { return rad * 180.0 / PI; }
 
 vec2f angleToVec(double deg) {
   double rad = toRad(deg);
@@ -64,4 +64,19 @@ vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p) {
   bary.x = 1 - (bary.y + bary.z);
 
   return bary;
+}
+
+bool isOutsideCircle(float x, float y, float radius) {
+  return ((x * x) + (y * y)) > square(radius);
+}
+
+bool isInsideCircle(float x, float y, float radius) {
+  return ((x * x) + (y * y)) <= square(radius);
+}
+
+vec2f getPointOnArc(float angle, float radius) {
+  vec2f v = angleToVec(angle);
+  v.y = -v.y;
+  v *= radius;
+  return v;
 }

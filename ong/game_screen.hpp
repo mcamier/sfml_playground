@@ -11,40 +11,26 @@
 #include "../utils/math/math.hpp"
 #include "../utils/screen/screen.hpp"
 #include "ball.hpp"
+#include "header.hpp"
 #include "player.hpp"
-
-enum players_enum { p1, p2 };
-
-enum game_mode { one_player_vs_ai, one_player, two_players };
 
 class GameScreen : public Screen {
  private:
   // all screen
   bool isLoaded = false;
-
   // pong game screen
   sf::Font font;
-
-  const int game_width = 200;
-  const int game_height = 200;
-  const int arena_radius = 75;
-  const int arena_defeat_radius = 100;
   bool round_active = false;
 
-  Player p1, p2;
-  Ball ball;
-  players_enum last_hit_by = players_enum::p2;
+  Player p1 = Player(players::p1);
+  Player p2 = Player(players::p2);
+  Ball ball = Ball(0, 0);
+  players last_hit_by = players::p2;
   int collision_count = 0;
   int ball_count = 1;
-  const int ball_count_max = 3;
 
  public:
-  GameScreen() {
-    this->transitionDurationSec = 0.0f;
-    p1 = Player(180);
-    p2 = Player(0);
-    ball = Ball(0, 0);
-  }
+  GameScreen() { this->transitionDurationSec = 0.0f; }
 
   bool load() {
     if (!font.loadFromFile("PressStart2P.ttf")) {
@@ -58,62 +44,53 @@ class GameScreen : public Screen {
   void update(const sf::Time& time) override {
     float elapsedSec = time.asSeconds();
 
-    // Start the round is not already started when the player push the space bar
-    if (!round_active && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-      round_active = true;
-      ball.vector = angleToVec(180);
-      srand((unsigned)elapsedSec);
-    } else if (round_active &&
-               sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-      resetBall();
+    if (!round_active) {
+      return;
     }
 
-    if (round_active) {
-      // move the ball
-      float ballSpeed = Ball::speed * (1 + (0.15f * collision_count));
-      ball.pos_dest.x = ball.pos.x + (ball.vector.x * elapsedSec * ballSpeed);
-      ball.pos_dest.y = ball.pos.y + (ball.vector.y * elapsedSec * ballSpeed);
+    // move the ball
+    float ballSpeed = ball.speed * (1 + (0.15f * collision_count));
+    ball.pos_dest.x = ball.pos.x + (ball.vector.x * elapsedSec * ballSpeed);
+    ball.pos_dest.y = ball.pos.y + (ball.vector.y * elapsedSec * ballSpeed);
 
-      if (ballLost(ball)) {
-        collision_count = 0;
-        resetBall();
-        // resetPaddles();
+    if (ballLost(ball)) {
+      collision_count = 0;
+      resetBall();
+      // resetPaddles();
 
-        // update score
-        if (last_hit_by == players_enum::p1) {
-          p1.score++;
-        } else if (last_hit_by == players_enum::p2) {
-          p2.score++;
-        }
+      // update score
+      if (last_hit_by == players::p1) {
+        p1.score++;
+      } else if (last_hit_by == players::p2) {
+        p2.score++;
       }
-      if (ballCollideWithPaddle(ball, p1)) {
-        collision_count++;
-        ball.vector.x = -ball.vector.x;
-        ball.vector.y = -ball.vector.y;
-        ball.resetDest();
-      }
-      // else if (ballCollideWithPaddle(ball, p2)) {}
-      else {
-        ball.setDestAsNewPos();
-      }
+    }
+    if (ballCollideWithPaddle(ball, p1)) {
+      collision_count++;
+      ball.vector.x = -ball.vector.x;
+      ball.vector.y = -ball.vector.y;
+      ball.resetDest();
+    }
+    // else if (ballCollideWithPaddle(ball, p2)) {}
+    else {
+      ball.setDestAsNewPos();
+    }
 
-      // player 1 move handling
-      int speed = Player::speed;
-      /*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl)
-              || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl)) {
-          speed = Player::low_speed;
-      }*/
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-        p1.angle -= elapsedSec * speed;
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-        p1.angle += elapsedSec * speed;
-      }
+    // player 1 move handling
+    /*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl)
+            || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl)) {
+        speed = Player::low_speed;
+    }*/
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+      p1.angle -= elapsedSec * default_player_speed;
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
+      p1.angle += elapsedSec * default_player_speed;
+    }
 
-      if (p1.angle >= 360) {
-        p1.angle = (int)p1.angle % 360;
-      } else if (p1.angle < 0) {
-        p1.angle = 360 + p1.angle;
-      }
+    if (p1.angle >= 360) {
+      p1.angle = (int)p1.angle % 360;
+    } else if (p1.angle < 0) {
+      p1.angle = 360 + p1.angle;
     }
   }
 
@@ -127,17 +104,9 @@ class GameScreen : public Screen {
                            arena_defeat_radius);
   }
 
-  bool isOutsideCircle(float x, float y, float radius) {
-    return ((x * x) + (y * y)) > square(radius);
-  }
-
-  bool isInsideCircle(float x, float y, float radius) {
-    return ((x * x) + (y * y)) <= square(radius);
-  }
-
   bool ballCollideWithPaddle(Ball& ball, Player& player) {
     if (isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y,
-                        arena_radius - Ball::radius) &&
+                        arena_radius - ball.radius) &&
         isInsideCircle(ball.pos_dest.x, ball.pos_dest.y, arena_radius)) {
       if (collideWithArc(ball, player)) {
         return true;
@@ -163,23 +132,36 @@ class GameScreen : public Screen {
     return res;
   }
 
-  bool handleEvent(const sf::Event& event) override { return false; }
+  bool handleEvent(const sf::Event& event) override {
+    if (event.type == sf::Event::KeyPressed &&
+        event.key.code == sf::Keyboard::Key::Space) {
+      if (!round_active) {
+        round_active = true;
+        ball.vector = angleToVec(180);
+      } else {
+        resetBall();
+      }
+    }
+  }
 
   void render(sf::RenderTexture& target) override {
+    drawDebug(target);
+    drawBall(target, ball.pos);
+    drawPlayer(target, p1);
+  }
+
+ private:
+  void drawDebug(sf::RenderTexture& tex) {
     sf::RectangleShape vline(sf::Vector2f(1.f, game_height));
     vline.setPosition(game_width / 2, 0);
     vline.setFillColor(sf::Color::Magenta);
     sf::RectangleShape hline(sf::Vector2f(game_width, 1.f));
     hline.setPosition(0, game_height / 2);
     hline.setFillColor(sf::Color::Magenta);
-    target.draw(vline);
-    target.draw(hline);
-
-    drawBall(target, ball.pos);
-    drawPlayer(target, p1);
+    tex.draw(vline);
+    tex.draw(hline);
   }
 
- private:
   void drawPlayer(sf::RenderTexture& tex, Player& player) {
     static float cos_half_pi = -0.999624217;
     static float sin_half_pi = -0.027412134;
@@ -219,16 +201,10 @@ class GameScreen : public Screen {
     tex.draw(shape);*/
   }
 
-  vec2f getPointOnArc(float angle, float radius) {
-    vec2f v = angleToVec(angle);
-    v.y = -v.y;
-    v *= radius;
-    return v;
-  }
-
-  void drawBall(sf::RenderTexture& tex, vec2f& pos) {
-    sf::CircleShape shape(Ball::radius);
-    shape.setPosition(pos.x + game_width / 2, pos.y + game_height / 2);
+  void drawBall(sf::RenderTexture& tex, const Ball& ball) {
+    sf::CircleShape shape(ball.radius);
+    shape.setPosition(ball.pos.x + game_width / 2,
+                      ball.pos.y + game_height / 2);
     shape.setFillColor(sf::Color::White);
     tex.draw(shape);
   }

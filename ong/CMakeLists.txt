@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(asset_folder "${CMAKE_CURRENT_SOURCE_DIR}/asset")
 
 set(ong_src
+        header.hpp
         ball.hpp
         main.cpp
         player.hpp

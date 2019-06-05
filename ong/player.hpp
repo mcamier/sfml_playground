@@ -1,6 +1,7 @@
 #ifndef FOOBAR_PLAYER_HPP
 #define FOOBAR_PLAYER_HPP
 
+#include <SFML/System.hpp>
 #include "header.hpp"
 
 class Player {
@@ -8,7 +9,7 @@ class Player {
   players player_id;
   int score;
   int angle;
-  int paddle_arc;
+  int paddle_half_arc;
 
   Player(players p) {
     if (players::p1 == p) {
@@ -17,7 +18,7 @@ class Player {
       this->angle = 0;
     }
     this->player_id = p;
-    this->paddle_arc = default_player_paddle_arc;
+    this->paddle_half_arc = default_player_paddle_half_arc;
   }
 
   void clampAngle() {

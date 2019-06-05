@@ -1,6 +1,8 @@
 #ifndef FOOBAR_GAMESCREEN_HPP
 #define FOOBAR_GAMESCREEN_HPP
 
+#include <iostream>
+
 #include "math.h"
 
 #include <SFML/Audio.hpp>
@@ -13,6 +15,8 @@
 #include "ball.hpp"
 #include "header.hpp"
 #include "player.hpp"
+
+using namespace std;
 
 class GameScreen : public Screen {
  private:
@@ -31,7 +35,7 @@ class GameScreen : public Screen {
  public:
   GameScreen() {
     this->transitionDurationSec = 0.0f;
-    balls[0] = Ball(0, 0);
+    balls[0] = Ball(0, 20);
   }
 
   bool load() {
@@ -54,7 +58,9 @@ class GameScreen : public Screen {
       return;
     }
 
+    // update each ball consecutively
     for (int i = 0; i < ball_count; i++) {
+      // move ball
       Ball& ball = balls[0];
       float ballSpeed = ball.speed * (1 + (0.15f * collision_count));
       ball.pos_dest.x = ball.pos.x + (ball.vector.x * elapsedSec * ballSpeed);
@@ -70,14 +76,23 @@ class GameScreen : public Screen {
           p2.score++;
         }
       }
-      if (ballCollideWithPaddle(ball, p1)) {
+
+      vec2f collision_response;
+      if (ballCollideWithPaddle(ball, p1, collision_response)) {
         collision_count++;
-        ball.vector.x = -ball.vector.x;
-        ball.vector.y = -ball.vector.y;
+        ball.last_hit_by = players::p1;
+
+        cout << "Apply collision response: " << collision_response.x << "; "
+             << collision_response.y << endl;
+        ball.vector = collision_response;
+        // put the ball in the last non-colliding position
         ball.resetDest();
-      }
-      // else if (ballCollideWithPaddle(ball, p2)) {}
-      else {
+      } else if (ballCollideWithPaddle(ball, p2, collision_response)) {
+        collision_count++;
+        ball.last_hit_by = players::p2;
+        ball.vector = collision_response;
+        ball.resetDest();
+      } else {
         ball.setDestAsNewPos();
       }
     }
@@ -117,12 +132,13 @@ class GameScreen : public Screen {
     drawDebug(target);
     drawBall(target, balls[0]);
     drawPlayer(target, p1);
+    drawPlayer(target, p2);
   }
 
  private:
   void resetBall() {
     this->ball_count = 1;
-    this->balls[0] = Ball(0, 0);
+    this->balls[0] = Ball(0, 20);
     this->balls[0].vector = angleToVec(180);
   }
 
@@ -131,32 +147,43 @@ class GameScreen : public Screen {
                            arena_defeat_radius);
   }
 
-  bool ballCollideWithPaddle(Ball& ball, Player& player) {
+  bool ballCollideWithPaddle(const Ball& ball, const Player& player,
+                             vec2f& collision_response) {
     if (isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y,
                         arena_radius - ball.radius) &&
         isInsideCircle(ball.pos_dest.x, ball.pos_dest.y, arena_radius)) {
-      if (collideWithArc(ball, player)) {
+      if (collideWithArc(ball, player, collision_response)) {
+        // if collision occurs then compute the collision response
         return true;
       }
     }
     return false;
   }
 
-  bool collideWithArc(Ball& ball, Player& player) {
-    float phi, min, max;
-    phi = min = max = .0f;
+  bool collideWithArc(const Ball& ball, const Player& player,
+                      vec2f& collision_response) {
+    vec2f ball_pos(ball.pos_dest);
+    ball_pos.normalize();
+    int ball_degrees = vectorToDegrees(ball_pos);
+    int player_degrees = player.angle;
 
-    vec2f p(ball.pos_dest.x, ball.pos_dest.y);
-    p.normalize();
-    p.y = -p.y;
-    phi = vectorToDegrees(p);
+    float min = player_degrees - player.paddle_half_arc;
+    float max = player_degrees + player.paddle_half_arc;
 
-    int half_angle = player.paddle_arc / 2;
-    min = player.angle - half_angle;
-    max = player.angle + half_angle;
+    if (player_degrees <= player.paddle_half_arc) {
+      return false;
+    } else if (player_degrees >= (360 - player.paddle_half_arc)) {
+      return false;
+    } else {
+      vec2f norm = angleToVec(player_degrees);
+      vec2f incidence = ball.vector;
+      float x = vec2f::dot(norm, incidence);
 
-    bool res = phi >= min && phi <= max;
-    return res;
+      vec2f reflect = incidence - (2 * (incidence - (x * norm)));
+      collision_response = -reflect;
+
+      return ball_degrees >= min && ball_degrees <= max;
+    }
   }
 
   void drawDebug(sf::RenderTexture& tex) {
@@ -168,18 +195,32 @@ class GameScreen : public Screen {
     hline.setFillColor(sf::Color::Magenta);
     tex.draw(vline);
     tex.draw(hline);
+
+    sf::CircleShape arena(arena_radius);
+    arena.setFillColor(sf::Color::Transparent);
+    arena.setOutlineColor(sf::Color::Magenta);
+    arena.setOutlineThickness(1);
+    arena.setOrigin(0, 0);
+    arena.setPosition(25, 25);
+    tex.draw(arena);
   }
 
   void drawPlayer(sf::RenderTexture& tex, Player& player) {
     static float cos_half_pi = -0.999624217;
     static float sin_half_pi = -0.027412134;
     int segment_count = 3;
-    float segment_arc_angle = (float)player.paddle_arc / segment_count;
+    float segment_arc_angle =
+        (float)(player.paddle_half_arc * 2) / segment_count;
     float segment_length = toRad(segment_arc_angle) * arena_radius;
-    int min_angle = player.angle - player.paddle_arc / 2;
+    int min_angle = player.angle - player.paddle_half_arc;
 
     sf::RectangleShape rect(sf::Vector2f(segment_length, 4));
-    rect.setFillColor(sf::Color::Red);
+
+    if (player.player_id == players::p1) {
+      rect.setFillColor(sf::Color::Red);
+    } else {
+      rect.setFillColor(sf::Color::Blue);
+    }
 
     for (int i = 0; i < segment_count; i++) {
       float angle = min_angle + i * segment_arc_angle;
@@ -213,7 +254,11 @@ class GameScreen : public Screen {
     sf::CircleShape shape(ball.radius);
     shape.setPosition(ball.pos.x + game_width / 2,
                       ball.pos.y + game_height / 2);
-    shape.setFillColor(sf::Color::White);
+    if (ball.last_hit_by == players::p1) {
+      shape.setFillColor(sf::Color::Red);
+    } else {
+      shape.setFillColor(sf::Color::Blue);
+    }
     tex.draw(shape);
   }
 };

@@ -46,7 +46,7 @@ float vectorToDegrees(vec2<T> v) {
     } else if (v.x < 0) {
       result += 180;
     } else if (v.y < 0) {
-      result += 270;
+      result = result + 360;
     }
     return result;
   }

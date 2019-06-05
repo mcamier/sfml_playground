@@ -4,3 +4,4 @@ build/
 .vscode/ipch/
 .vscode/launch.json
 *.dSYM/
+.DS_Store

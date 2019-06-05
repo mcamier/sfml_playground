@@ -31,6 +31,7 @@ class GameScreen : public Screen {
   Ball balls[ball_count_max];
   int collision_count = 0;
   int ball_count = 1;
+  players controllable_player = players::p1;
 
  public:
   GameScreen() {
@@ -39,7 +40,8 @@ class GameScreen : public Screen {
   }
 
   bool load() {
-    if (!font.loadFromFile("PressStart2P.ttf")) {
+    if (!font.loadFromFile(
+            "/Users/doudou/Workspaces/sfml_playground/build/ong/font.ttf")) {
       this->isLoaded = false;
       return false;
     }
@@ -78,16 +80,15 @@ class GameScreen : public Screen {
       }
 
       vec2f collision_response;
-      if (ballCollideWithPaddle(ball, p1, collision_response)) {
+      if (ball.last_hit_by != players::p1 &&
+          ballCollideWithPaddle(ball, p1, collision_response)) {
         collision_count++;
         ball.last_hit_by = players::p1;
-
-        cout << "Apply collision response: " << collision_response.x << "; "
-             << collision_response.y << endl;
         ball.vector = collision_response;
         // put the ball in the last non-colliding position
         ball.resetDest();
-      } else if (ballCollideWithPaddle(ball, p2, collision_response)) {
+      } else if (ball.last_hit_by != players::p2 &&
+                 ballCollideWithPaddle(ball, p2, collision_response)) {
         collision_count++;
         ball.last_hit_by = players::p2;
         ball.vector = collision_response;
@@ -97,12 +98,15 @@ class GameScreen : public Screen {
       }
     }
 
+    Player* controlled_player =
+        (controllable_player == players::p1) ? &p1 : &p2;
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-      p1.angle -= elapsedSec * default_player_speed;
+      controlled_player->angle -= elapsedSec * default_player_speed;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-      p1.angle += elapsedSec * default_player_speed;
+      controlled_player->angle += elapsedSec * default_player_speed;
     }
-    p1.clampAngle();
+    controlled_player->clampAngle();
   }
 
   /**
@@ -119,6 +123,10 @@ class GameScreen : public Screen {
       } else {
         resetBall();
       }
+    } else if (event.type == sf::Event::KeyPressed &&
+               event.key.code == sf::Keyboard::Key::LShift) {
+      controllable_player =
+          (controllable_player == players::p1) ? players::p2 : players::p1;
     }
 
     return false;
@@ -130,9 +138,9 @@ class GameScreen : public Screen {
    */
   void render(sf::RenderTexture& target) override {
     drawDebug(target);
-    drawBall(target, balls[0]);
     drawPlayer(target, p1);
     drawPlayer(target, p2);
+    drawBall(target, balls[0]);
   }
 
  private:
@@ -152,36 +160,39 @@ class GameScreen : public Screen {
     if (isOutsideCircle(ball.pos_dest.x, ball.pos_dest.y,
                         arena_radius - ball.radius) &&
         isInsideCircle(ball.pos_dest.x, ball.pos_dest.y, arena_radius)) {
-      if (collideWithArc(ball, player, collision_response)) {
+      if (collideWithArc(ball, player)) {
         // if collision occurs then compute the collision response
+        vec2f norm = angleToVec(player.angle);
+        vec2f incidence = ball.vector;
+        float x = vec2f::dot(norm, incidence);
+
+        vec2f reflect = incidence - (2 * (incidence - (x * norm)));
+        collision_response = -reflect;
         return true;
       }
     }
     return false;
   }
 
-  bool collideWithArc(const Ball& ball, const Player& player,
-                      vec2f& collision_response) {
+  bool collideWithArc(const Ball& ball, const Player& player) {
     vec2f ball_pos(ball.pos_dest);
     ball_pos.normalize();
     int ball_degrees = vectorToDegrees(ball_pos);
     int player_degrees = player.angle;
 
-    float min = player_degrees - player.paddle_half_arc;
-    float max = player_degrees + player.paddle_half_arc;
-
     if (player_degrees <= player.paddle_half_arc) {
-      return false;
+      float max = player_degrees + player.paddle_half_arc;
+      float sub_360 = 360 - (player_degrees - player.paddle_half_arc);
+      return ball_degrees <= max &&
+             (ball_degrees >= 0 || ball_degrees >= sub_360);
     } else if (player_degrees >= (360 - player.paddle_half_arc)) {
-      return false;
+      float min = player_degrees - player.paddle_half_arc;
+      float up_0 = 360 - player_degrees;
+      return ball_degrees >= min &&
+             (ball_degrees <= 360 || ball_degrees <= up_0);
     } else {
-      vec2f norm = angleToVec(player_degrees);
-      vec2f incidence = ball.vector;
-      float x = vec2f::dot(norm, incidence);
-
-      vec2f reflect = incidence - (2 * (incidence - (x * norm)));
-      collision_response = -reflect;
-
+      float min = player_degrees - player.paddle_half_arc;
+      float max = player_degrees + player.paddle_half_arc;
       return ball_degrees >= min && ball_degrees <= max;
     }
   }
@@ -203,6 +214,13 @@ class GameScreen : public Screen {
     arena.setOrigin(0, 0);
     arena.setPosition(25, 25);
     tex.draw(arena);
+
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(8);
+    text.setFillColor(sf::Color::White);
+    text.setString("test");
+    tex.draw(text);
   }
 
   void drawPlayer(sf::RenderTexture& tex, Player& player) {
@@ -227,8 +245,6 @@ class GameScreen : public Screen {
       vec2f p = getPointOnArc(angle, arena_radius);
 
       vec2f v = angleToVec(angle);
-      // v.x = -v.x;
-      // v.y = -v.y;
       v.x = -v.x * cos_half_pi + v.y * sin_half_pi;
       v.y = -v.x * sin_half_pi - v.y * cos_half_pi;
 
@@ -237,17 +253,6 @@ class GameScreen : public Screen {
       rect.rotate(pouet);
       tex.draw(rect);
     }
-
-    /*sf::CircleShape shape(3);
-    shape.setFillColor(sf::Color::White);
-
-    vec2 p = getPointOnArc(player.angle-half_angle, arena_radius);
-    shape.setPosition(p.x+game_width/2, p.y+game_height/2);
-    tex.draw(shape);
-
-    p = getPointOnArc(player.angle+half_angle, arena_radius);
-    shape.setPosition(p.x+game_width/2, p.y+game_height/2);
-    tex.draw(shape);*/
   }
 
   void drawBall(sf::RenderTexture& tex, const Ball& ball) {

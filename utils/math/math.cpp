@@ -76,7 +76,6 @@ bool isInsideCircle(float x, float y, float radius) {
 
 vec2f getPointOnArc(float angle, float radius) {
   vec2f v = angleToVec(angle);
-  v.y = -v.y;
   v *= radius;
   return v;
 }

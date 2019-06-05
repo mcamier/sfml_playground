@@ -14,6 +14,8 @@
 #include "game_screen.hpp"
 #include "player.hpp"
 
+#include "manifest.hpp"
+
 using namespace std;
 
 int main() {

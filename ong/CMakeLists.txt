@@ -11,7 +11,7 @@ set(ong_src
         player.hpp
         game_screen.hpp)
 
-add_custom_command(OUTPUT manifest.cpp manifest.hpp
+add_custom_command(OUTPUT manifest.cpp manifest.hpp bundle.bin
         COMMAND resource_bundler ${asset_folder})
 
 add_executable(ong

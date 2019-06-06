@@ -40,10 +40,10 @@ class GameScreen : public Screen {
     this->transitionDurationSec = 0.0f;
     balls[0] = Ball(0, 20);
     // todo
-    char* bytes;
-    long* size;
-    resource_service.get(ResourceManifest::FONT, *bytes, *size);
-    resource_service.get(ResourceManifest::BOOM, *bytes, *size);
+    const char* bytes;
+    long size;
+    resource_service.get(ResourceManifest::FONT, &bytes, &size);
+    resource_service.get(ResourceManifest::BOOM, &bytes, &size);
   }
 
   bool load() {

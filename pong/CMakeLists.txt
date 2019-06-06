@@ -19,7 +19,7 @@ set_target_properties(pong PROPERTIES
 
 target_include_directories(pong
         PUBLIC
-            utils
+            ${TORTUGA_LIB_INCLUDE}
             ${SFML_LIB_INCLUDE})
 
 target_link_directories(pong
@@ -28,7 +28,7 @@ target_link_directories(pong
 
 target_link_libraries(pong
         PUBLIC
-            utils
+            tortuga-core
             sfml-graphics
             sfml-window
             sfml-system)

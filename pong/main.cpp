@@ -6,9 +6,8 @@
 #include <list>
 #include <string>
 
-#include "../utils/math/mat3.hpp"
-#include "../utils/math/math.hpp"
-#include "../utils/screen/screen_manager.hpp"
+#include "TE/math/math.hpp"
+#include "TE/screen/screen_manager.hpp"
 #include "ball.hpp"
 #include "game_screen.hpp"
 #include "menu_screen.hpp"

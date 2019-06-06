@@ -1,7 +1,7 @@
 #ifndef FOOBAR_BALL_HPP
 #define FOOBAR_BALL_HPP
 
-#include "../utils/math/vec2.hpp"
+#include "TE/math/vec2.hpp"
 
 class Ball {
  public:

@@ -1,7 +1,7 @@
 #ifndef FOOBAR_PLAYER_HPP
 #define FOOBAR_PLAYER_HPP
 
-#include "../utils/math/vec2.hpp"
+#include "TE/math/vec2.hpp"
 
 class Player {
  public:

@@ -9,7 +9,7 @@ using namespace std;
 
 class ResourceService {
  private:
-  // map<resource_info, raw_resource_handler> loaded_resources;
+  map<const char *, raw_resource_handler> loaded_resources;
 
  public:
   /**
@@ -26,11 +26,11 @@ class ResourceService {
    * an unresponsive application
    * @param  info: Resource to load, should be listed as static field in the
    * ResourceManifest type
-   * @param  out_bytes: ref to the load resource
+   * @param  out_ptr: ref to the load resource
    * @param  out_size: size of the resource in memory
    */
-  void immediateLoad(const resource_info &info, char &out_bytes,
-                     long &out_size);
+  void immediateLoad(const resource_info &info, const char **out_ptr,
+                     long *out_size);
 
   /**
    * @brief Get the location and size of a loaded resource
@@ -39,10 +39,10 @@ class ResourceService {
    * behavior
    * @param  info: Resource to load, should be listed as static field in
    * the ResourceManifest type
-   * @param  out_bytes: ref to the load resource
+   * @param  out_ptr: ref to the load resource
    * @param  out_size: size of the resource in memory
    */
-  void get(const resource_info &info, char &out_bytes, long &out_size);
+  void get(const resource_info &info, const char **out_ptr, long *out_size);
 
  private:
   /**
@@ -52,6 +52,16 @@ class ResourceService {
    * @retval
    */
   bool isLoaded(const resource_info &info);
+
+  /**
+   * @brief
+   * @note
+   * @param  &info:
+   * @param  **out_ptr:
+   * @param  *out_size:
+   * @retval None
+   */
+  void load(const resource_info &info, const char **out_ptr, long *out_size);
 };
 
 #endif  // FOOBAR_RESOURCE_SERVICE_HPP

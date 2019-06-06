@@ -4,9 +4,9 @@
 #include <SFML/System.hpp>
 #include <iostream>
 
-#include "../utils/math/math.hpp"
-#include "../utils/math/vec2.hpp"
-#include "../utils/screen/screen_manager.hpp"
+#include "TE/math/math.hpp"
+#include "TE/math/vec2.hpp"
+#include "TE/screen/screen_manager.hpp"
 
 class MenuScreen : public Screen {
  private:

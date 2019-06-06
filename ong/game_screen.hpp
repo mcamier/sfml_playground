@@ -168,6 +168,7 @@ class GameScreen : public Screen {
 
         vec2f reflect = incidence - (2 * (incidence - (x * norm)));
         collision_response = -reflect;
+
         return true;
       }
     }
@@ -224,35 +225,26 @@ class GameScreen : public Screen {
   }
 
   void drawPlayer(sf::RenderTexture& tex, Player& player) {
-    static float cos_half_pi = -0.999624217;
-    static float sin_half_pi = -0.027412134;
-    int segment_count = 3;
-    float segment_arc_angle =
-        (float)(player.paddle_half_arc * 2) / segment_count;
-    float segment_length = toRad(segment_arc_angle) * arena_radius;
-    int min_angle = player.angle - player.paddle_half_arc;
-
-    sf::RectangleShape rect(sf::Vector2f(segment_length, 4));
-
+    vec2f p = getPointOnArc(player.angle, arena_radius);
+    sf::Color color;
     if (player.player_id == players::p1) {
-      rect.setFillColor(sf::Color::Red);
+      color = sf::Color::Red;
     } else {
-      rect.setFillColor(sf::Color::Blue);
+      color = sf::Color::Blue;
     }
 
-    for (int i = 0; i < segment_count; i++) {
-      float angle = min_angle + i * segment_arc_angle;
-      vec2f p = getPointOnArc(angle, arena_radius);
+    sf::CircleShape c(3);
+    c.setFillColor(color);
+    c.setPosition(p.x + game_width / 2, p.y + game_height / 2);
+    tex.draw(c);
 
-      vec2f v = angleToVec(angle);
-      v.x = -v.x * cos_half_pi + v.y * sin_half_pi;
-      v.y = -v.x * sin_half_pi - v.y * cos_half_pi;
+    p = getPointOnArc(player.angle - player.paddle_half_arc, arena_radius);
+    c.setPosition(p.x + game_width / 2, p.y + game_height / 2);
+    tex.draw(c);
 
-      rect.setPosition(p.x + game_width / 2, p.y + game_height / 2);
-      float pouet = vectorToDegrees(v);
-      rect.rotate(pouet);
-      tex.draw(rect);
-    }
+    p = getPointOnArc(player.angle + player.paddle_half_arc, arena_radius);
+    c.setPosition(p.x + game_width / 2, p.y + game_height / 2);
+    tex.draw(c);
   }
 
   void drawBall(sf::RenderTexture& tex, const Ball& ball) {

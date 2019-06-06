@@ -74,7 +74,12 @@ bool isInsideCircle(float x, float y, float radius) {
   return ((x * x) + (y * y)) <= square(radius);
 }
 
-vec2f getPointOnArc(float angle, float radius) {
+vec2f getPointOnArc(int angle, float radius) {
+  if (angle >= 360) {
+    angle = angle % 360;
+  } else if (angle < 0) {
+    angle = 360 + angle;
+  }
   vec2f v = angleToVec(angle);
   v *= radius;
   return v;

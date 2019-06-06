@@ -58,7 +58,7 @@ bool isOutsideCircle(float x, float y, float radius);
 
 bool isInsideCircle(float x, float y, float radius);
 
-vec2f getPointOnArc(float angle, float radius);
+vec2f getPointOnArc(int angle, float radius);
 
 vec3f mean(vec3f pts[], int num_pts);
 

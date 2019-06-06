@@ -91,17 +91,9 @@ void writeManifestHppFile(resource_info_list* resourceInfoList) {
   ofstream fout("manifest.hpp", ios::trunc | ios::out);
   resource_info_list* next = resourceInfoList;
 
-  fout << "struct resource_info {" << endl;
-  fout << "\tconst char* name;" << endl;
-  fout << "\tconst char* extension;" << endl;
-  fout << "\tconst long size;" << endl;
-  fout << "\tconst long head;" << endl;
-  fout << endl;
-  fout << "\tconstexpr resource_info(const char* name, const char* extension, "
-          "const long head, const long size) : name(name), "
-          "extension(extension), size(size), head(head) {}"
-       << endl;
-  fout << "};" << endl << endl;
+  fout << "#ifndef MANIFEST_HPP" << endl;
+  fout << "#define MANIFEST_HPP" << endl << endl;
+  fout << "#include \"TE/resource/resource_info.hpp\"" << endl << endl;
 
   fout << "class ResourceManifest {" << endl;
   fout << "public:" << endl;
@@ -113,7 +105,8 @@ void writeManifestHppFile(resource_info_list* resourceInfoList) {
   fout << endl;
   fout << "\tstatic const int _COUNT;" << endl;
   fout << "\tstatic const resource_info _ALL[];" << endl;
-  fout << "};";
+  fout << "};" << endl;
+  fout << "#endif";
   fout.close();
 }
 

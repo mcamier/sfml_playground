@@ -1,13 +1,19 @@
 {
-    "editor.fontSize": 13,
+    "editor.fontSize": 14,
     "editor.cursorStyle": "block",
-    "editor.autoClosingBrackets": "always",
-    "editor.autoClosingQuotes": "always",
     "editor.formatOnSave": true,
     "files.associations": {
         "iostream": "cpp",
         "ostream": "cpp",
         "iosfwd": "cpp",
-        "istream": "cpp"
-    }
+        "istream": "cpp",
+        "iterator": "cpp",
+        "vector": "cpp",
+        "__tuple": "cpp",
+        "locale": "cpp",
+        "tuple": "cpp",
+        "map": "cpp"
+    },
+    "editor.autoClosingBrackets": "beforeWhitespace",
+    "editor.autoClosingQuotes": "beforeWhitespace"
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include "manifest.hpp"
 #include "math.h"
 
 #include <SFML/Audio.hpp>
@@ -10,8 +11,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
-#include "../utils/math/math.hpp"
-#include "../utils/screen/screen.hpp"
+#include "TE/math/math.hpp"
+#include "TE/resource/resource_service.hpp"
+#include "TE/screen/screen.hpp"
 #include "ball.hpp"
 #include "header.hpp"
 #include "player.hpp"
@@ -34,9 +36,14 @@ class GameScreen : public Screen {
   players controllable_player = players::p1;
 
  public:
-  GameScreen() {
+  GameScreen(ResourceService& resource_service) {
     this->transitionDurationSec = 0.0f;
     balls[0] = Ball(0, 20);
+    // todo
+    char* bytes;
+    long* size;
+    resource_service.get(ResourceManifest::FONT, *bytes, *size);
+    resource_service.get(ResourceManifest::BOOM, *bytes, *size);
   }
 
   bool load() {

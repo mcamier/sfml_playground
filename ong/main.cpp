@@ -6,12 +6,14 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <vector>
 
-#include "../utils/math/mat3.hpp"
-#include "../utils/math/math.hpp"
-#include "../utils/screen/screen_manager.hpp"
+#include "TE/math/math.hpp"
+#include "TE/resource/resource_service.hpp"
+#include "TE/screen/screen_manager.hpp"
 #include "ball.hpp"
 #include "game_screen.hpp"
+#include "load_screen.hpp"
 #include "player.hpp"
 
 #include "manifest.hpp"
@@ -28,10 +30,15 @@ int main() {
   window.setFramerateLimit(60);
   window.setVerticalSyncEnabled(true);
 
+  ResourceService resourceService;
   ScreenManager screen_mgr;
-  GameScreen game_screen;
-  game_screen.load();
-  screen_mgr.addScreen(static_cast<Screen*>(&game_screen));
+  vector<resource_info> gameScreenResources;
+  gameScreenResources.push_back(ResourceManifest::BOOM);
+  gameScreenResources.push_back(ResourceManifest::HIT);
+  gameScreenResources.push_back(ResourceManifest::FONT);
+
+  LoadScreen load_screen(resourceService, gameScreenResources);
+  screen_mgr.addScreen(static_cast<Screen*>(&load_screen));
 
   clock.restart();
   while (window.isOpen()) {

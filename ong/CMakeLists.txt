@@ -9,6 +9,7 @@ set(ong_src
         ball.hpp
         main.cpp
         player.hpp
+        load_screen.hpp
         game_screen.hpp)
 
 add_custom_command(OUTPUT manifest.cpp manifest.hpp bundle.bin
@@ -26,7 +27,7 @@ set_target_properties(ong PROPERTIES
 
 target_include_directories(ong
         PUBLIC
-            utils
+            ${TORTUGA_LIB_INCLUDE}
             ${CMAKE_CURRENT_BINARY_DIR}
             ${SFML_LIB_INCLUDE})
 
@@ -36,7 +37,7 @@ target_link_directories(ong
 
 target_link_libraries(ong
         PUBLIC
-            utils
+            tortuga-core
             sfml-graphics
             sfml-window
             sfml-system)

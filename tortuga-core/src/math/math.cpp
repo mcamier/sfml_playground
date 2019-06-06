@@ -1,4 +1,4 @@
-#include "math.hpp"
+#include "../../inc/TE/math/math.hpp"
 
 #include <math.h>
 

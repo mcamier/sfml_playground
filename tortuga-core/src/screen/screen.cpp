@@ -1,4 +1,4 @@
-#include "screen.hpp"
+#include "../../inc/TE/screen/screen.hpp"
 
 float Screen::getTransition() {
   float transition = transitionTimeElapsed / transitionDurationSec;

@@ -1,8 +1,8 @@
 #include <iostream>
-#include "../utils/math/math.hpp"
-#include "../utils/math/plane.hpp"
-#include "../utils/math/vec2.hpp"
-#include "../utils/math/vec3.hpp"
+#include "TE/math/math.hpp"
+#include "TE/math/plane.hpp"
+#include "TE/math/vec2.hpp"
+#include "TE/math/vec3.hpp"
 
 using namespace std;
 

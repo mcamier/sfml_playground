@@ -11,8 +11,8 @@ set_target_properties(exp_matrix PROPERTIES
 
 target_include_directories(exp_matrix
         PUBLIC
-            utils)
+            ${TORTUGA_LIB_INCLUDE})
 
 target_link_libraries(exp_matrix
         PUBLIC
-            utils)
+            tortuga-core)

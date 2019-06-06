@@ -1,4 +1,4 @@
-#include "screen_manager.hpp"
+#include "../../inc/TE/screen/screen_manager.hpp"
 
 void ScreenManager::addScreen(Screen* screenPtr) {
   screenPtr->isEntering = true;

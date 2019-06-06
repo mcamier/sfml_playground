@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -195,14 +196,42 @@ int main(int argc, char* argv[]) {
   string bundle_filename = "bundle.bin";
   ofstream bundle_file;
   bundle_file.open(bundle_filename.c_str(), std::ios::binary | std::ios::out);
+  long pos = -1;
 
   resource_info_list* next = list;
   while (next != nullptr) {
     resource_info& info = next->info;
+    info.head = pos + 1;
     ifstream res(info.filepath, std::ios::binary | std::ios::in);
 
-    // read all file content and put it into the bundle
+    char buffer[256];
+    int buffer_size = 256;
 
+    // read the length of the file
+    res.seekg(0, ios_base::end);
+    long size = res.tellg();
+    cout << "size: " << size << " for file: " << info.name << endl;
+
+    // reset the cursor to the beginning of the file before copying it into the
+    // bundle
+    res.seekg(0, ios_base::beg);
+    long current_pos = res.tellg();
+    while (!res.eof()) {
+      // when the last portion of the file under copy is smaller then the buffer
+      // size we avoid copying extra bytes
+      if ((size - current_pos) < buffer_size) {
+        int delta = +(size - current_pos);
+        res.read(buffer, delta);
+        bundle_file.write(buffer, delta);
+      } else {
+        res.read(buffer, buffer_size);
+        bundle_file.write(buffer, buffer_size);
+      }
+    }
+    pos = bundle_file.tellp();
+    info.size = size;
+
+    // close this resource file and move on the next one
     res.close();
     next = next->next;
   }
@@ -210,6 +239,7 @@ int main(int argc, char* argv[]) {
   // close bundle file
   bundle_file.close();
 
+  // write the c++ sources for used by the project
   writeManifestHppFile(list);
   writeManifestCppFile(list);
 }

@@ -1,11 +1,19 @@
 #ifndef FOOBAR_RESOURCE_SERVICE_HPP
 #define FOOBAR_RESOURCE_SERVICE_HPP
 
+#include <SFML/System.hpp>
+#include <future>
 #include <map>
+#include <tuple>
 
 #include "resource_info.hpp"
 
 using namespace std;
+
+struct raw_res_hdl {
+  long size;
+  const char *ptr;
+};
 
 class ResourceService {
  private:
@@ -18,7 +26,7 @@ class ResourceService {
    * @param  info: Resource to load, should be listed as static field in the
    * ResourceManifest type
    */
-  void deferredLoad(const resource_info &info);
+  future<raw_res_hdl> deferredLoad(const resource_info &info);
 
   /**
    * @brief Load synchronously a resource from the bundle file
@@ -62,6 +70,15 @@ class ResourceService {
    * @retval None
    */
   void load(const resource_info &info, const char **out_ptr, long *out_size);
+
+  /**
+   * @brief
+   * @note
+   * @param  &info:
+   * @param  promise:
+   * @retval None
+   */
+  void asyncLoad(const resource_info &info, promise<raw_res_hdl> promise);
 };
 
 #endif  // FOOBAR_RESOURCE_SERVICE_HPP

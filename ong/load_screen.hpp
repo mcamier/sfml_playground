@@ -3,6 +3,9 @@
 
 #include "manifest.hpp"
 
+#include <SFML/System.hpp>
+#include <chrono>
+#include <future>
 #include <vector>
 
 #include "TE/resource/resource_service.hpp"
@@ -17,8 +20,13 @@ class LoadScreen : public Screen {
   sf::Font font;
   bool is_loading = false;
   bool is_loaded = false;
+
   ResourceService &res_service;
   vector<resource_info> resources;
+  vector<future<raw_res_hdl>> futures;
+
+  sf::Time interval = sf::seconds(1);
+  int point = 0;
 
  public:
   LoadScreen(ResourceService &resource_service, vector<resource_info> resources)
@@ -38,16 +46,35 @@ class LoadScreen : public Screen {
       // ask the ResourceService to load all the resources needed for the next
       // screen
       for (auto r = resources.begin(); r != resources.end(); r++) {
-        res_service.deferredLoad(*r);
+        auto fu = res_service.deferredLoad(*r);
+        futures.push_back(std::move(fu));
       }
     } else if (!is_loaded) {
       // wait for all the resources to be loaded
-    } else {
-      // everything it loaded open up the game screen and close this one
-      GameScreen *pong_screen = new GameScreen(res_service);
-      ScreenManager &mgr = getOwner();
-      mgr.addScreen(static_cast<Screen *>(pong_screen));
-      close();
+      bool temp_is_loaded = true;
+      for (auto it = futures.begin(); it != futures.end(); it++) {
+        std::chrono::duration<int, std::milli> no_wait(0);
+        if (it->wait_for(no_wait) != future_status::ready) {
+          cout << "still not loaded ... " << endl;
+          temp_is_loaded = false;
+          break;
+        }
+      }
+
+      is_loaded = temp_is_loaded;
+
+      if (is_loaded) {
+        GameScreen *game_screen = new GameScreen(res_service);
+        ScreenManager &mgr = getOwner();
+        mgr.addScreen(static_cast<Screen *>(game_screen));
+        close();
+      }
+
+      interval -= time;
+      if (interval.asMilliseconds() <= 0) {
+        point++;
+        interval = sf::seconds(1);
+      }
     }
   }
 
@@ -55,8 +82,12 @@ class LoadScreen : public Screen {
 
   void render(sf::RenderTexture &target) override {
     sf::Text text;
-    text.setString("Loading");
-    text.setCharacterSize(16);
+    string t = "Loading";
+    for (int i = 0; i < point; i++) {
+      t.append(".");
+    }
+    text.setString(t);
+    text.setCharacterSize(7);
     text.setFont(font);
     text.setFillColor(sf::Color::White);
     target.draw(text);

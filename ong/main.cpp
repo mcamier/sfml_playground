@@ -6,6 +6,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "TE/math/math.hpp"
@@ -16,7 +17,11 @@
 #include "load_screen.hpp"
 #include "player.hpp"
 
+#include "event.hpp"
 #include "manifest.hpp"
+
+#include <functional>
+#include <string>
 
 using namespace std;
 
@@ -35,7 +40,7 @@ int main() {
   vector<resource_info> gameScreenResources;
   gameScreenResources.push_back(ResourceManifest::BOOM);
   gameScreenResources.push_back(ResourceManifest::HIT);
-  gameScreenResources.push_back(ResourceManifest::FONT);
+  // gameScreenResources.push_back(ResourceManifest::FONT);
 
   LoadScreen load_screen(resourceService, gameScreenResources);
   screen_mgr.addScreen(static_cast<Screen*>(&load_screen));

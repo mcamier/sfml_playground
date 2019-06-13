@@ -10,10 +10,12 @@
 
 #include "TE/resource/resource_service.hpp"
 #include "TE/screen/screen.hpp"
-#include "TE/screen/screen_manager.hpp"
+#include "TE/screen/screen_service.hpp"
+#include "TE/service_locator.hpp"
 #include "game_screen.hpp"
 
 using namespace std;
+using ta::ServiceLocator;
 
 class LoadScreen : public Screen {
  private:
@@ -21,16 +23,14 @@ class LoadScreen : public Screen {
   bool is_loading = false;
   bool is_loaded = false;
 
-  ResourceService &res_service;
   vector<resource_info> resources;
-  vector<future<raw_res_hdl>> futures;
+  vector<future<raw_resource_handler>> futures;
 
   sf::Time interval = sf::seconds(1);
   int point = 0;
 
  public:
-  LoadScreen(ResourceService &resource_service, vector<resource_info> resources)
-      : res_service(resource_service), resources(resources) {}
+  LoadScreen(vector<resource_info> resources) : resources(resources) {}
 
   void update(const sf::Time &time) override {
     if (!is_loading) {
@@ -40,13 +40,14 @@ class LoadScreen : public Screen {
       long size;
       // load the font immediately in order to display a loading message within
       // this screen
-      res_service.immediateLoad(ResourceManifest::FONT, &ptr, &size);
+      ServiceLocator::resourceService->immediateLoad(ResourceManifest::FONT,
+                                                     &ptr, &size);
       font.loadFromMemory(reinterpret_cast<const void *>(ptr), size);
 
       // ask the ResourceService to load all the resources needed for the next
       // screen
       for (auto r = resources.begin(); r != resources.end(); r++) {
-        auto fu = res_service.deferredLoad(*r);
+        auto fu = ServiceLocator::resourceService->deferredLoad(*r);
         futures.push_back(std::move(fu));
       }
     } else if (!is_loaded) {
@@ -55,7 +56,6 @@ class LoadScreen : public Screen {
       for (auto it = futures.begin(); it != futures.end(); it++) {
         std::chrono::duration<int, std::milli> no_wait(0);
         if (it->wait_for(no_wait) != future_status::ready) {
-          cout << "still not loaded ... " << endl;
           temp_is_loaded = false;
           break;
         }
@@ -64,8 +64,8 @@ class LoadScreen : public Screen {
       is_loaded = temp_is_loaded;
 
       if (is_loaded) {
-        GameScreen *game_screen = new GameScreen(res_service);
-        ScreenManager &mgr = getOwner();
+        GameScreen *game_screen = new GameScreen();
+        ScreenService &mgr = getOwner();
         mgr.addScreen(static_cast<Screen *>(game_screen));
         close();
       }

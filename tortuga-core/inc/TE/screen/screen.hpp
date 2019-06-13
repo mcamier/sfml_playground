@@ -4,15 +4,17 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+namespace ta {
+
 using sf::Event;
 using sf::RenderTexture;
 using sf::Time;
 
 // Forward declaration;
-class ScreenManager;
+class ScreenService;
 
 class Screen {
-  friend class ScreenManager;
+  friend class ScreenService;
 
  private:
   /*
@@ -33,7 +35,7 @@ class Screen {
   /*
    * Instance of the screenManager managing the screen
    */
-  ScreenManager* owner = nullptr;
+  ScreenService* owner = nullptr;
 
   /*
    * Computed value, is true the screen must be drawn
@@ -71,9 +73,11 @@ class Screen {
 
   inline bool getIsExiting() { return isExiting; }
 
-  ScreenManager& getOwner();
+  ScreenService& getOwner();
 
   void close();
 };
+
+}  // namespace ta
 
 #endif  // FOOBAR_SCREEN_HPP

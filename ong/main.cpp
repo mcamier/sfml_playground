@@ -10,20 +10,25 @@
 #include <vector>
 
 #include "TE/math/math.hpp"
+#include "TE/message/message.hpp"
+#include "TE/message/message_service.hpp"
+#include "TE/message/subscription.hpp"
 #include "TE/resource/resource_service.hpp"
-#include "TE/screen/screen_manager.hpp"
+#include "TE/screen/screen_service.hpp"
+#include "TE/service_locator.hpp"
 #include "ball.hpp"
 #include "game_screen.hpp"
+#include "header.hpp"
 #include "load_screen.hpp"
 #include "player.hpp"
 
-#include "event.hpp"
 #include "manifest.hpp"
 
 #include <functional>
 #include <string>
 
 using namespace std;
+using namespace ta;
 
 int main() {
   sf::Event event;
@@ -35,15 +40,21 @@ int main() {
   window.setFramerateLimit(60);
   window.setVerticalSyncEnabled(true);
 
+  MessageService msgService;
   ResourceService resourceService;
-  ScreenManager screen_mgr;
+  ScreenService screenService;
+
+  ServiceLocator::messageService = &msgService;
+  ServiceLocator::resourceService = &resourceService;
+  ServiceLocator::screenService = &screenService;
+
   vector<resource_info> gameScreenResources;
   gameScreenResources.push_back(ResourceManifest::BOOM);
   gameScreenResources.push_back(ResourceManifest::HIT);
   // gameScreenResources.push_back(ResourceManifest::FONT);
 
-  LoadScreen load_screen(resourceService, gameScreenResources);
-  screen_mgr.addScreen(static_cast<Screen*>(&load_screen));
+  LoadScreen load_screen(gameScreenResources);
+  screenService.addScreen(static_cast<Screen*>(&load_screen));
 
   clock.restart();
   while (window.isOpen()) {
@@ -58,16 +69,16 @@ int main() {
 
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) window.close();
-
-      screen_mgr.handleEvent(event);
+      screenService.handleEvent(event);
     }
 
-    screen_mgr.update(elapsed);
+    screenService.update(elapsed);
+    msgService.update();
 
     window.clear(sf::Color::Black);
     RenderTexture render_tex;
     render_tex.create(200, 200);
-    screen_mgr.render(render_tex);
+    screenService.render(render_tex);
     sprite = Sprite(render_tex.getTexture());
     RenderStates rdr_state = sf::RenderStates::Default;
     rdr_state.transform.translate(0, 800);

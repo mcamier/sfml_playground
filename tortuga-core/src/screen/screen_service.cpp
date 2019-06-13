@@ -1,6 +1,8 @@
-#include "../../inc/TE/screen/screen_manager.hpp"
+#include "../../inc/TE/screen/screen_service.hpp"
 
-void ScreenManager::addScreen(Screen* screenPtr) {
+namespace ta {
+
+void ScreenService::addScreen(Screen* screenPtr) {
   screenPtr->isEntering = true;
   screenPtr->isExiting = false;
   screenPtr->owner = this;
@@ -9,7 +11,7 @@ void ScreenManager::addScreen(Screen* screenPtr) {
   screenList.push_front(screenPtr);
 }
 
-void ScreenManager::handleEvent(const Event& event) {
+void ScreenService::handleEvent(const Event& event) {
   auto itr = screenList.begin();
   while (itr != screenList.end()) {
     Screen* screen = (*itr);
@@ -22,7 +24,7 @@ void ScreenManager::handleEvent(const Event& event) {
   }
 }
 
-void ScreenManager::update(const Time& time) {
+void ScreenService::update(const Time& time) {
   bool isBlocked = false;
 
   auto itr = screenList.begin();
@@ -57,7 +59,7 @@ void ScreenManager::update(const Time& time) {
   }
 }
 
-void ScreenManager::render(RenderTexture& target) {
+void ScreenService::render(RenderTexture& target) {
   RenderTexture render_tex;
   Sprite sprite;
   RenderStates rdr_state = sf::RenderStates::Default;
@@ -77,3 +79,5 @@ void ScreenManager::render(RenderTexture& target) {
     itr++;
   }
 }
+
+}  // namespace ta

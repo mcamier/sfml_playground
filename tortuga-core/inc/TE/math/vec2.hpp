@@ -1,6 +1,8 @@
 #ifndef FOOBAR_VEC2_HPP
 #define FOOBAR_VEC2_HPP
 
+namespace ta {
+
 template <typename T>
 class vec2 {
  public:
@@ -88,5 +90,7 @@ vec2<T> operator*(vec2<T> v, double s) {
 typedef vec2<int> vec2i;
 typedef vec2<float> vec2f;
 typedef vec2<double> vec2d;
+
+}  // namespace ta
 
 #endif  // FOOBAR_VEC2_HPP

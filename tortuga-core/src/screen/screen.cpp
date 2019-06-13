@@ -1,5 +1,7 @@
 #include "../../inc/TE/screen/screen.hpp"
 
+namespace ta {
+
 float Screen::getTransition() {
   float transition = transitionTimeElapsed / transitionDurationSec;
   return (transition > 1) ? 1 : transition;
@@ -7,10 +9,12 @@ float Screen::getTransition() {
 
 float Screen::isActive() { return !isExiting && !isEntering; }
 
-ScreenManager& Screen::getOwner() { return *owner; }
+ScreenService& Screen::getOwner() { return *owner; }
 
 void Screen::close() {
   this->transitionTimeElapsed = 0;
   this->isEntering = false;
   this->isExiting = true;
 }
+
+}  // namespace ta

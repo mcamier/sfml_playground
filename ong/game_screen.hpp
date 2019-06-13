@@ -12,13 +12,18 @@
 #include <SFML/Window.hpp>
 
 #include "TE/math/math.hpp"
+#include "TE/message/message.hpp"
+#include "TE/message/message_service.hpp"
+#include "TE/message/subscription.hpp"
 #include "TE/resource/resource_service.hpp"
 #include "TE/screen/screen.hpp"
+#include "TE/service_locator.hpp"
 #include "ball.hpp"
 #include "header.hpp"
 #include "player.hpp"
 
 using namespace std;
+using namespace ta;
 
 class GameScreen : public Screen {
  private:
@@ -35,15 +40,28 @@ class GameScreen : public Screen {
   int ball_count = 1;
   players controllable_player = players::p1;
 
+  Subscription subBallLost;
+  Subscription subPlayerWin;
+  Subscription subPlayerCollideBall;
+
  public:
-  GameScreen(ResourceService& resource_service) {
+  GameScreen() {
     this->transitionDurationSec = 0.0f;
     balls[0] = Ball(0, 20);
     // todo
     const char* bytes;
     long size;
-    resource_service.get(ResourceManifest::FONT, &bytes, &size);
-    resource_service.get(ResourceManifest::BOOM, &bytes, &size);
+    ServiceLocator::resourceService->get(ResourceManifest::FONT, &bytes, &size);
+    ServiceLocator::resourceService->get(ResourceManifest::BOOM, &bytes, &size);
+
+    subBallLost = ServiceLocator::messageService->subscribe(
+        MSG_BALL_LOST, &GameScreen::onBallLost, this);
+
+    subPlayerWin = ServiceLocator::messageService->subscribe(
+        MSG_PLAYER_WIN, &GameScreen::onPlayerWin, this);
+
+    subPlayerCollideBall = ServiceLocator::messageService->subscribe(
+        MSG_PLAYER_COLLIDE_BALL, &GameScreen::onPlayerCollidesBall, this);
   }
 
   bool load() {
@@ -76,14 +94,11 @@ class GameScreen : public Screen {
       ball.pos_dest.y = ball.pos.y + (ball.vector.y * elapsedSec * ballSpeed);
 
       if (ballLost(ball)) {
-        collision_count = 0;
-        resetBall();
-        // update scores
-        if (ball.last_hit_by == players::p1) {
-          p1.score++;
-        } else if (ball.last_hit_by == players::p2) {
-          p2.score++;
-        }
+        message msg;
+        msg.type = MSG_BALL_LOST;
+        msg.v0.type = variant::type_t::INT_T;
+        msg.v0.intValue = i;
+        ServiceLocator::messageService->sendMessage(msg);
       }
 
       vec2f collision_response;
@@ -94,12 +109,20 @@ class GameScreen : public Screen {
         ball.vector = collision_response;
         // put the ball in the last non-colliding position
         ball.resetDest();
+
+        message msg;
+        msg.type = MSG_PLAYER_COLLIDE_BALL;
+        ServiceLocator::messageService->sendMessage(msg);
       } else if (ball.last_hit_by != players::p2 &&
                  ballCollideWithPaddle(ball, p2, collision_response)) {
         collision_count++;
         ball.last_hit_by = players::p2;
         ball.vector = collision_response;
         ball.resetDest();
+
+        message msg;
+        msg.type = MSG_PLAYER_COLLIDE_BALL;
+        ServiceLocator::messageService->sendMessage(msg);
       } else {
         ball.setDestAsNewPos();
       }
@@ -151,6 +174,25 @@ class GameScreen : public Screen {
   }
 
  private:
+  void onPlayerCollidesBall(message msg) {
+    cout << "player collides with ball" << endl;
+  }
+
+  void onBallLost(message msg) {
+    int ballIdx = msg.v0.intValue;
+    collision_count = 0;
+    resetBall();
+    // update scores
+    // TODO reference to game obj
+    if (balls[ballIdx].last_hit_by == players::p1) {
+      p1.score++;
+    } else if (balls[ballIdx].last_hit_by == players::p2) {
+      p2.score++;
+    }
+  }
+
+  void onPlayerWin(message msg) { cout << "player win" << endl; }
+
   void resetBall() {
     this->ball_count = 1;
     this->balls[0] = Ball(0, 20);

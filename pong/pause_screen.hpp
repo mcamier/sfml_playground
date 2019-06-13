@@ -6,7 +6,7 @@
 
 #include "TE/math/math.hpp"
 #include "TE/math/vec2.hpp"
-#include "TE/screen/screen_manager.hpp"
+#include "TE/screen/screen_service.hpp"
 
 class PauseScreen : public Screen {
  private:

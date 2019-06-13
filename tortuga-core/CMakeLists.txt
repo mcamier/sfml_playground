@@ -12,13 +12,17 @@ set(TORTUGA_CORE_HEADER
         inc/TE/resource/resource_info.hpp
         inc/TE/resource/resource_service.hpp
         inc/TE/screen/screen.hpp
-        inc/TE/screen/screen_manager.hpp
+        inc/TE/screen/screen_service.hpp
 )
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
+        src/service_locator.cpp
         src/resource/resource_service.cpp
+        src/message/message_service.cpp
+        src/message/subscription.cpp
+        src/message/message.cpp
         src/screen/screen.cpp
-        src/screen/screen_manager.cpp
+        src/screen/screen_service.cpp
 )
 
 add_library(tortuga-core 

@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+namespace ta {
+
 double toRad(int degree) { return degree * PI / 180.0; }
 
 int toDeg(double rad) { return rad * 180.0 / PI; }
@@ -94,3 +96,5 @@ vec3f mean(vec3f pts[], int num_pts) {
 
   return mean;
 }
+
+}  // namespace ta

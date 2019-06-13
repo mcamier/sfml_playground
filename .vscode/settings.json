@@ -61,7 +61,8 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "future": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "array": "cpp"
     },
     "editor.autoClosingBrackets": "beforeWhitespace",
     "editor.autoClosingQuotes": "beforeWhitespace"

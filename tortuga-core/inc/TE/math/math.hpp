@@ -9,6 +9,8 @@
 #define PI 3.141592654
 #define TWO_PI 6.283185307
 
+namespace ta {
+
 double toRad(int degree);
 
 int toDeg(double rad);
@@ -61,5 +63,7 @@ bool isInsideCircle(float x, float y, float radius);
 vec2f getPointOnArc(int angle, float radius);
 
 vec3f mean(vec3f pts[], int num_pts);
+
+}  // namespace ta
 
 #endif  // FOOBAR_MATH_HPP

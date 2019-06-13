@@ -12,11 +12,12 @@
 
 #include <SFML/System.hpp>
 
-future<raw_res_hdl> ResourceService::deferredLoad(const resource_info& info) {
+future<raw_resource_handler> ResourceService::deferredLoad(
+    const resource_info& info) {
   // start a thread
   // load the resources in the thread
   std::cout << "deferred load of resource " << info.name << std::endl;
-  promise<raw_res_hdl> pr;
+  promise<raw_resource_handler> pr;
   auto fu = pr.get_future();
 
   if (!isLoaded(info)) {
@@ -27,9 +28,7 @@ future<raw_res_hdl> ResourceService::deferredLoad(const resource_info& info) {
     const char* ptr;
     long size;
     get(info, &ptr, &size);
-    raw_res_hdl hdl;
-    hdl.size = size;
-    hdl.ptr = ptr;
+    raw_resource_handler hdl(ptr, size);
     pr.set_value(hdl);
   }
 
@@ -48,8 +47,6 @@ void ResourceService::immediateLoad(const resource_info& info,
 void ResourceService::get(const resource_info& info, const char** out_ptr,
                           long* out_size) {
   if (isLoaded(info)) {
-    std::cout << "resource present" << std::endl;
-
     auto it = loaded_resources.find(info.name);
     if (it != loaded_resources.end()) {
       raw_resource_handler& hdl = it->second;
@@ -95,10 +92,9 @@ void ResourceService::load(const resource_info& info, const char** out_ptr,
 }
 
 void ResourceService::asyncLoad(const resource_info& info,
-                                promise<raw_res_hdl> promise) {
+                                promise<raw_resource_handler> promise) {
   char* ptr = (char*)malloc(sizeof(char) * info.size);
 
-  cout << "async load" << endl;
   std::chrono::duration<int, std::milli> some_wait(3000);
   this_thread::sleep_for(some_wait);
 
@@ -114,11 +110,9 @@ void ResourceService::asyncLoad(const resource_info& info,
   bundle_file.close();
 
   // set value in the promise
-  raw_res_hdl hdl;
-  hdl.size = info.size;
-  hdl.ptr = ptr;
+  raw_resource_handler hdl(ptr, info.size);
   promise.set_value(hdl);
 
   // set value in the map of loaded resources
-  // TODO
+  loaded_resources.insert(std::make_pair(info.name, hdl));
 }

@@ -1,10 +1,12 @@
-#ifndef FOOBAR_SCREEN_MANAGER_HPP
-#define FOOBAR_SCREEN_MANAGER_HPP
+#ifndef FOOBAR_SCREEN_SERVICE_HPP
+#define FOOBAR_SCREEN_SERVICE_HPP
 
 #include <SFML/System.hpp>
 #include <list>
 
 #include "screen.hpp"
+
+namespace ta {
 
 using std::list;
 
@@ -15,7 +17,7 @@ using sf::RenderWindow;
 using sf::Sprite;
 using sf::Time;
 
-class ScreenManager {
+class ScreenService {
  public:
   list<Screen*> screenList;
 
@@ -28,4 +30,6 @@ class ScreenManager {
   void render(RenderTexture& target);
 };
 
-#endif  // FOOBAR_SCREEN_MANAGER_HPP
+}  // namespace ta
+
+#endif  // FOOBAR_SCREEN_SERVICE_HPP

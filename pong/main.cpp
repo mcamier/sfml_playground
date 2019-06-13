@@ -7,7 +7,7 @@
 #include <string>
 
 #include "TE/math/math.hpp"
-#include "TE/screen/screen_manager.hpp"
+#include "TE/screen/screen_service.hpp"
 #include "ball.hpp"
 #include "game_screen.hpp"
 #include "menu_screen.hpp"
@@ -28,10 +28,10 @@ int main() {
   window.setFramerateLimit(60);
   window.setVerticalSyncEnabled(true);
 
-  ScreenManager screen_mgr;
+  ScreenService screenService;
   MenuScreen menu_screen;
   menu_screen.load();
-  screen_mgr.addScreen(static_cast<Screen*>(&menu_screen));
+  screenService.addScreen(static_cast<Screen*>(&menu_screen));
 
   clock.restart();
   while (window.isOpen()) {
@@ -40,15 +40,15 @@ int main() {
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) window.close();
 
-      screen_mgr.handleEvent(event);
+      screenService.handleEvent(event);
     }
 
-    screen_mgr.update(elapsed);
+    screenService.update(elapsed);
 
     window.clear(sf::Color::Black);
     RenderTexture render_tex;
     render_tex.create(800, 600);
-    screen_mgr.render(render_tex);
+    screenService.render(render_tex);
     sprite = Sprite(render_tex.getTexture());
     window.draw(sprite);
     window.display();

@@ -8,6 +8,7 @@
 #include "TE/resource/resource_service.hpp"
 
 using namespace std;
+using namespace ta;
 
 class ResourceManifest {
  public:

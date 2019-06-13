@@ -3,6 +3,8 @@
 
 #include "TE/math/vec2.hpp"
 
+using namespace ta;
+
 class Ball {
  public:
   static const int width = 20;

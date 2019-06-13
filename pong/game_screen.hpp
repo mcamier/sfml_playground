@@ -11,6 +11,8 @@
 #include "pause_screen.hpp"
 #include "player.hpp"
 
+using namespace ta;
+
 class GameScreen : public Screen {
  private:
   // all screen

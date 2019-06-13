@@ -10,11 +10,6 @@
 
 using namespace std;
 
-struct raw_res_hdl {
-  long size;
-  const char *ptr;
-};
-
 class ResourceService {
  private:
   map<const char *, raw_resource_handler> loaded_resources;
@@ -26,7 +21,7 @@ class ResourceService {
    * @param  info: Resource to load, should be listed as static field in the
    * ResourceManifest type
    */
-  future<raw_res_hdl> deferredLoad(const resource_info &info);
+  future<raw_resource_handler> deferredLoad(const resource_info &info);
 
   /**
    * @brief Load synchronously a resource from the bundle file
@@ -78,7 +73,8 @@ class ResourceService {
    * @param  promise:
    * @retval None
    */
-  void asyncLoad(const resource_info &info, promise<raw_res_hdl> promise);
+  void asyncLoad(const resource_info &info,
+                 promise<raw_resource_handler> promise);
 };
 
 #endif  // FOOBAR_RESOURCE_SERVICE_HPP

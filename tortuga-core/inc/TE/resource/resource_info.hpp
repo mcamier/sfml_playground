@@ -19,6 +19,11 @@ struct raw_resource_handler {
   // Empty constructor for usage with standard containers like map, vector, etc
   raw_resource_handler() : ptr(nullptr), size(0) {}
 
+  raw_resource_handler& operator=(const raw_resource_handler& r) {
+    raw_resource_handler handler;
+    return handler;
+  }
+
   raw_resource_handler(const char* ptr, const long size)
       : ptr(ptr), size(size) {}
 };

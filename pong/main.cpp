@@ -7,7 +7,7 @@
 #include <string>
 
 #include "TE/math/math.hpp"
-#include "TE/screen/screen_service.hpp"
+#include "TE/screen/ScreenService.hpp"
 #include "ball.hpp"
 #include "game_screen.hpp"
 #include "menu_screen.hpp"
@@ -49,7 +49,7 @@ int main() {
     RenderTexture render_tex;
     render_tex.create(800, 600);
     screenService.render(render_tex);
-    sprite = Sprite(render_tex.getTexture());
+    sprite = sf::Sprite(render_tex.getTexture());
     window.draw(sprite);
     window.display();
   }

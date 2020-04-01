@@ -1,11 +1,20 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 
 project(tortuga
         VERSION 0.1
         LANGUAGES C CXX)
 
-SET(SFML_LIB_PATH "/usr/local/Cellar/sfml/2.5.1/lib")
-SET(SFML_LIB_INCLUDE "/usr/local/Cellar/sfml/2.5.1/include")
+# SFML library build
+#add_subdirectory(./libs/SFML-2.5.1-sources)
+set(SFML_STATIC_LIBRARIES TRUE)
+set(SFML_DIR "./libs/SFML-2.5.1/lib/cmake/SFML")
+find_package(SFML REQUIRED COMPONENTS main graphics window system audio network)
+
+message("ADD DEFINITION 'RUNNING_LINUX'")
+add_definitions(-DRUNNING_LINUX=1)
+
+#message(ADD DEFINTION "RUNNING_WINDOWS")
+#add_definitions(-DRUNNING_WINDOWS=1)
 
 add_subdirectory(tortuga-core)
 add_subdirectory(experiments)

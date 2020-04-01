@@ -6,7 +6,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
-#include "TE/screen/screen.hpp"
+#include "TE/core/ServiceLocator.hpp"
+#include "TE/screen/Screen.hpp"
 #include "ball.hpp"
 #include "pause_screen.hpp"
 #include "player.hpp"
@@ -15,10 +16,10 @@ using namespace ta;
 
 class GameScreen : public Screen {
  private:
-  // all screen
+  // all Screen
   bool isLoaded = false;
 
-  // pong game screen
+  // pong game Screen
   sf::Font font;
   const int paddle_p1_x_axis = 50;
   const int paddle_p2_x_axis = 750;
@@ -106,7 +107,7 @@ class GameScreen : public Screen {
       // player 2 AI
       bool isBallComingToP2 = (ball.vector.x > 0);
       if (!isBallComingToP2) {
-        // go back to the center of the screen, then idle
+        // go back to the center of the Screen, then idle
         if (p2.pos.y < (game_height / 2)) {
           p2.pos_dest.y += elapsedSec * Player::speed;
         } else if (p2.pos.y > (game_height / 2)) {
@@ -169,7 +170,7 @@ class GameScreen : public Screen {
   bool handleEvent(const sf::Event& event) override {
     if ((event.type == sf::Event::EventType::KeyPressed) &&
         (event.key.code == sf::Keyboard::Key::Escape)) {
-      getOwner().addScreen(static_cast<Screen*>(pause_screen));
+      GetScreenService()->addScreen(static_cast<Screen*>(pause_screen));
     }
 
     return false;

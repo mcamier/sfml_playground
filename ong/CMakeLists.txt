@@ -1,16 +1,17 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 
 # Enable c++17 capatibility
 set(CMAKE_CXX_STANDARD 17)
 set(asset_folder "${CMAKE_CURRENT_SOURCE_DIR}/asset")
 
 set(ong_src
-        header.hpp
-        ball.hpp
-        main.cpp
-        player.hpp
-        load_screen.hpp
-        game_screen.hpp)
+        header/header.hpp
+        header/ball.hpp
+        source/main.cpp
+        header/player.hpp
+        header/load_screen.hpp
+        header/menu_screen.hpp
+        header/game_screen.hpp)
 
 add_custom_command(OUTPUT manifest.cpp manifest.hpp bundle.bin
         COMMAND resource_bundler ${asset_folder})

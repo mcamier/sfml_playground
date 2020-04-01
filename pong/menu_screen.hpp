@@ -6,7 +6,7 @@
 
 #include "TE/math/math.hpp"
 #include "TE/math/vec2.hpp"
-#include "TE/screen/screen_service.hpp"
+#include "TE/screen/ScreenService.hpp"
 
 class MenuScreen : public Screen {
  private:
@@ -53,8 +53,7 @@ class MenuScreen : public Screen {
          event.key.code == sf::Keyboard::Key::Enter)) {
       GameScreen* pong_screen = new GameScreen();
       pong_screen->load();
-      ScreenService& mgr = getOwner();
-      mgr.addScreen(static_cast<Screen*>(pong_screen));
+      GetScreenService()->addScreen(static_cast<Screen*>(pong_screen));
       close();
     }
 

@@ -3,6 +3,7 @@
 
 #include "math.h"
 #include "vec2.hpp"
+#include "rect.hpp"
 #include "vec3.hpp"
 
 #define HALF_PI 1.570796327
@@ -54,7 +55,7 @@ float vectorToDegrees(vec2<T> v) {
   }
 }
 
-vec3f barycentric(vec3f a, vec3f b, vec3f c, vec3f p);
+vec3f barycentric(const vec3f& a, const vec3f& b, const vec3f& c, const vec3f& p);
 
 bool isOutsideCircle(float x, float y, float radius);
 
@@ -63,6 +64,8 @@ bool isInsideCircle(float x, float y, float radius);
 vec2f getPointOnArc(int angle, float radius);
 
 vec3f mean(vec3f pts[], int num_pts);
+
+bool isPointInsideRect(const vec2f& pt, const rectf& rect);
 
 }  // namespace ta
 

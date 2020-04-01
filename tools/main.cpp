@@ -4,10 +4,9 @@
 #include <iostream>
 #include <list>
 #include <sstream>
+#include <string.h>
 #include <string>
-
 #include <dirent.h>
-#include <stdio.h>
 
 using namespace std;
 
@@ -112,12 +111,14 @@ void writeManifestHppFile(resource_info_list* resourceInfoList) {
 
 bool isFolder(const char* folder) {
   bool isFolder = false;
+
   DIR* rep = opendir(folder);
 
   if (rep != NULL) {
     isFolder = true;
     closedir(rep);
   }
+
   return isFolder;
 }
 

@@ -20,15 +20,12 @@ class ResourceManifest {
   static const resource_info _ALL[];
 };
 
-const resource_info ResourceManifest::FONT =
-    resource_info("FONT", "ttf", 0, 82480);
-const resource_info ResourceManifest::BOOM =
-    resource_info("BOOM", "wav", 82689, 371398);
-const resource_info ResourceManifest::HIT =
-    resource_info("HIT", "wav", 454145, 117670);
+const resource_info ResourceManifest::FONT = resource_info("FONT", "ttf", 0, 82480);
+const resource_info ResourceManifest::BOOM = resource_info("BOOM", "wav", 82689, 371398);
+const resource_info ResourceManifest::HIT = resource_info("HIT", "wav", 454145, 117670);
 const int ResourceManifest::_COUNT = 3;
-const resource_info ResourceManifest::_ALL[3] = {
-    ResourceManifest::FONT, ResourceManifest::BOOM, ResourceManifest::HIT};
+
+const resource_info ResourceManifest::_ALL[3] = {ResourceManifest::FONT, ResourceManifest::BOOM, ResourceManifest::HIT};
 
 void print_vector(const vec2f &v) { cout << v.x << ", " << v.y << endl; }
 

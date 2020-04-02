@@ -8,25 +8,44 @@
 #include "../core/IEventHandler.hpp"
 #include "../core/IUpdatable.hpp"
 #include "../core/IRenderable.hpp"
+#include "../managers.hpp"
 
 namespace ta {
 
 using std::list;
 using std::unique_ptr;
+using namespace utils;
 
-class ScreenService : public IEventHandler, public IUpdatable, public IRenderable {
+struct ScreenServiceConf_t {
+};
+
+class ScreenService : public ISingletonService<ScreenService, ScreenServiceConf_t> {
+    friend ISingletonService<ScreenService, ScreenServiceConf_t>;
 
 private:
     list<Screen*> screenList;
 
 public:
+    ScreenService &operator=(const ScreenService &) = delete;
+
     void addScreen(Screen* screenPtr);
 
     bool handleEvent(const Event &event);
 
-    void update(const Time &);
-
     void render(RenderTexture &);
+
+protected:
+    void vInit(ScreenServiceConf_t initStructArg) override {};
+
+    void vDestroy() override {};
+
+public:
+    /**
+     * @brief Forward all the messages to the observers
+     */
+    void vUpdate() override {}
+
+    void update(const Time &time);
 
 };
 

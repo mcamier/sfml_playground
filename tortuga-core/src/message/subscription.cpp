@@ -1,6 +1,5 @@
 #include "../../inc/TE/message/subscription.hpp"
 
-#include <iostream>
 #include <mutex>
 
 #include "../../inc/TE/message/message_service.hpp"

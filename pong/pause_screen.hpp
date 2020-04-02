@@ -9,49 +9,49 @@
 #include "TE/screen/ScreenService.hpp"
 
 class PauseScreen : public Screen {
- private:
-  bool isLoaded = false;
+private:
+    bool isLoaded = false;
 
-  sf::Font font;
-  sf::Text text;
+    sf::Font font;
+    sf::Text text;
 
- public:
-  PauseScreen() {
-    this->transitionDurationSec = 0.2f;
-    this->isBlocker = true;
-    this->isTranslucent = true;
-  }
-
-  bool load() {
-    if (!font.loadFromFile("PressStart2P.ttf")) {
-      this->isLoaded = false;
+public:
+    PauseScreen() {
+        this->transitionDurationSec = 0.2f;
+        this->isBlocker = true;
+        this->isTranslucent = true;
     }
 
-    text.setFont(font);
-    text.setCharacterSize(60);
-    text.setString("PAUSE");
-    text.setFillColor(sf::Color::White);
-    text.setOutlineThickness(4);
-    text.setOutlineColor(sf::Color::Black);
+    bool load() {
+        if (!font.loadFromFile("PressStart2P.ttf")) {
+            this->isLoaded = false;
+        }
 
-    text.setPosition(280, 270);
+        text.setFont(font);
+        text.setCharacterSize(60);
+        text.setString("PAUSE");
+        text.setFillColor(sf::Color::White);
+        text.setOutlineThickness(4);
+        text.setOutlineColor(sf::Color::Black);
 
-    this->isLoaded = true;
-    return this->isLoaded;
-  }
+        text.setPosition(280, 270);
 
-  bool handleEvent(const sf::Event& event) override {
-    if ((event.type == sf::Event::EventType::KeyPressed) &&
-        (event.key.code == sf::Keyboard::Key::Escape)) {
-      close();
+        this->isLoaded = true;
+        return this->isLoaded;
     }
 
-    return false;
-  }
+    bool handleEvent(const sf::Event& event) override {
+        if ((event.type == sf::Event::EventType::KeyPressed) &&
+            (event.key.code == sf::Keyboard::Key::Escape)) {
+            close();
+        }
 
-  void update(const sf::Time& time) override {}
+        return false;
+    }
 
-  void render(sf::RenderTexture& target) override { target.draw(text); }
+    void update(const sf::Time& time) override {}
+
+    void render(sf::RenderTexture& target) override { target.draw(text); }
 };
 
 #endif  // FOOBAR_PAUSESCREEN_HPP

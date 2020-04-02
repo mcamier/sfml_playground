@@ -24,4 +24,14 @@ void Screen::close() {
     this->isExiting = true;
 }
 
+void Screen::_update(const Time& time) {
+    if(isEntering) {
+        this->onEntering(getTransition());
+    }
+    else if(isExiting) {
+        this->onExiting(getTransition());
+    }
+    this->update(time);
+}
+
 }  // namespace ta

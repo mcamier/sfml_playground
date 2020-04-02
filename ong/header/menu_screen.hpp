@@ -1,8 +1,11 @@
 #ifndef FOOBAR_MENUSCREEN_HPP
 #define FOOBAR_MENUSCREEN_HPP
 
+#include <TE/GameApp.hpp>
 #include <TE/screen/ui/UIScreen.hpp>
 #include <TE/screen/ui/element/UIElement.hpp>
+#include <TE/message/message_service.hpp>
+#include "game_screen.hpp"
 
 using namespace ta;
 
@@ -16,24 +19,32 @@ public:
             cout << "fail to load the font file" << endl;
         }
 
-        UIElement* title = UILabel::buildElement("ONG!", font, UIOrigin::BOTTOM_RIGHT, 130, 0.99f, 0.99f);
+        UIElement* title = UILabel::buildElement("ONG!", font, UIOrigin::CENTER, 180, 0.5f, 0.3f);
         this->addItem(title);
 
-        UIElement* playButton = UIButton::buildElement("Play", font, UIOrigin::TOP_LEFT, 20, 0.02, 0.05f,
+        UIElement* subtitle = UILabel::buildElement("It's not Pong, but it's close...", font, UIOrigin::CENTER, 20, 0.5f, 0.5f);
+        this->addItem(subtitle);
+
+        UIElement* playButton = UIButton::buildElement("Play", font, UIOrigin::CENTER, 25, 0.5f, 0.7f,
                                                        [this]() { this->onPlayGame(); });
         this->addItem(playButton);
 
-        UIElement* exitButton = UIButton::buildElement("Exit", font, UIOrigin::TOP_LEFT, 20, 0.02, 0.1f,
+        UIElement* exitButton = UIButton::buildElement("Exit", font, UIOrigin::CENTER, 25, 0.5f, 0.85f,
                                                        [this]() { this->onExitApp(); });
         this->addItem(exitButton);
     }
 
 private:
     void onPlayGame() {
-        GetScreenService()->addScreen(new GameScreen());
+        ScreenService::get().addScreen(new GameScreen());
+        close();
     }
 
-    void onExitApp() {}
+    void onExitApp() {
+        message msg;
+        msg.type = EXIT_GAME_REQUESTED;
+        MessageService::get().sendMessage(msg);
+    }
 
 public:
     void update(const Time& time) override {}

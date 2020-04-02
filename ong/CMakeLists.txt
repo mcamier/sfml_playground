@@ -13,11 +13,13 @@ set(ong_src
         header/menu_screen.hpp
         header/game_screen.hpp)
 
+# Generate bundle file along with c++ class relative to game assets
 add_custom_command(OUTPUT manifest.cpp manifest.hpp bundle.bin
         COMMAND resource_bundler ${asset_folder})
 
 add_executable(ong
         ${ong_src}
+        # add to the compilation classes the c++ files relative to the game assets
         ${CMAKE_CURRENT_BINARY_DIR}/manifest.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/manifest.cpp)
 

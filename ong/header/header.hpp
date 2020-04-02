@@ -23,8 +23,12 @@ messageType_t MSG_PLAYER_WIN = makeHash("MSG_PLAYER_WIN");
 messageType_t MSG_POWER_UP_PICKED_UP = makeHash("MSG_POWER_UP_PICKED_UP");
 messageType_t MSG_PLAYER_COLLIDE_BALL = makeHash("MSG_PLAYER_COLLIDE_BALL");
 
-enum players { p1, p2 };
+enum players {
+    p1, p2
+};
 
-enum game_mode { one_player_vs_ai, one_player, two_players };
+enum game_mode {
+    one_player_vs_ai, one_player, two_players
+};
 
 #endif  // FOOBAR_HEADER_ONG_HPP

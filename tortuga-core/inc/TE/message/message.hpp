@@ -1,8 +1,6 @@
 #ifndef TA_MSG_HPP
 #define TA_MSG_HPP
 
-#define CREATE
-
 namespace ta {
 
 typedef unsigned int messageType_t;

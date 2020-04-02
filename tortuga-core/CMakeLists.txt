@@ -18,11 +18,15 @@ set(TORTUGA_CORE_HEADER
         inc/TE/core/IEventHandler.hpp
         inc/TE/core/IRenderable.hpp
         inc/TE/core/IUpdatable.hpp
-        inc/TE/core/core.hpp)
+        inc/TE/core/core.hpp
+        inc/TE/GameApp.hpp
+        inc/TE/memory.hpp
+        inc/TE/logger.hpp
+        inc/TE/profiler.hpp
+        )
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
-        src/core/ServiceLocator.cpp
         src/resource/resource_service.cpp
         src/message/message_service.cpp
         src/message/subscription.cpp
@@ -30,6 +34,10 @@ set(TORTUGA_CORE_SOURCE
         src/screen/Screen.cpp
         src/screen/ScreenService.cpp
         src/screen/ui/UIScreen.cpp
+        src/GameApp.cpp
+        src/memory.cpp
+        src/profiler.cpp
+        src/logger.cpp
 )
 
 add_library(tortuga-core 

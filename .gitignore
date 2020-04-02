@@ -6,3 +6,9 @@ build/
 *.dSYM/
 .DS_Store
 libs/*
+lib/*
+bin/*
+Makefile
+cmake_install.cmake
+*.cbp
+CMakefiles/

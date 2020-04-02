@@ -48,19 +48,19 @@ void ScreenService::update(const Time &time) {
                 screen->transitionTimeElapsed = 0;
             }
 
-            if (!isBlocked) screen->update(time);
+            if (!isBlocked) screen->_update(time);
 
             itr++;
         } else if (screen->isExiting) {
             if (screen->getTransition() < 1) {
                 screen->transitionTimeElapsed += time.asSeconds();
-                screen->update(time);
+                screen->_update(time);
                 itr++;
             } else {
                 itr = screenList.erase(itr);
             }
         } else {
-            if (!isBlocked) screen->update(time);
+            if (!isBlocked) screen->_update(time);
             itr++;
         }
 

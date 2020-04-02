@@ -60,6 +60,13 @@ public:
     inline bool getIsExiting() { return isExiting; }
 
     void close();
+
+    void _update(const Time& time);
+
+    virtual void onEntering(const float transitionInterpolation) {}
+
+    virtual void onExiting(const float transitionInterpolation) {}
+
 };
 
 }  // namespace ta

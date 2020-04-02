@@ -14,7 +14,6 @@
 
 namespace ta {
 
-
 using sf::Font;
 using sf::Text;
 using ta::vec2;
@@ -35,21 +34,14 @@ protected:
     UIOrigin origin;
     vec2f position;
 
-public:
-    //virtual void getBoundingBox() = 0;
 };
 
+class UITextElement : public UIElement {
 
-class UILabel : public UIElement {
-private:
+protected:
     Text text;
 
 public:
-    bool handleEvent(const Event& event) override {
-        // do nothing
-        return true;
-    }
-
     void render(RenderTexture& renderTarget) override {
         float x = this->position.x * renderTarget.getSize().x;
         float y = this->position.y * renderTarget.getSize().y;
@@ -69,8 +61,18 @@ public:
         renderTarget.draw(this->text);
     }
 
-    static UIElement*
-    buildElement(const string& label, const Font& font, UIOrigin origin, int fontSize, float x, float y) {
+};
+
+
+class UILabel : public UITextElement {
+
+public:
+    bool handleEvent(const Event& event) override {
+        // do nothing
+        return true;
+    }
+
+    static UIElement* buildElement(const string& label, const Font& font, UIOrigin origin, int fontSize, float x, float y) {
         UILabel* element = new UILabel();
         element->origin = origin;
         element->position.x = x;
@@ -79,14 +81,12 @@ public:
         element->text.setCharacterSize(fontSize);
         element->text.setFont(font);
         element->text.setFillColor(sf::Color::Red);
-        element->text.setPosition(0, 0);
         return element;
     }
 };
 
-class UIButton : public UIElement {
+class UIButton : public UITextElement {
 private:
-    Text text;
     std::function<void()> callback;
 
 public:
@@ -95,31 +95,11 @@ public:
             vec2f point = vec2f(event.mouseButton.x, event.mouseButton.y);
             rectf rect = rectf(text.getPosition().x, text.getPosition().y, text.getLocalBounds().width, text.getLocalBounds().height);
             if (isPointInsideRect(point, rect)) {
-                std::cout << "poouet" << std::endl;
                 callback();
+                return false;
             }
         }
-
         return true;
-    }
-
-    void render(RenderTexture& renderTarget) override {
-        float x = this->position.x * renderTarget.getSize().x;
-        float y = this->position.y * renderTarget.getSize().y;
-
-        if (origin == UIOrigin::TOP_RIGHT || origin == UIOrigin::BOTTOM_RIGHT) {
-            x -= text.getLocalBounds().width;
-        }
-        if (origin == UIOrigin::BOTTOM_RIGHT || origin == UIOrigin::BOTTOM_LEFT) {
-            y -= text.getLocalBounds().height;
-        }
-        if (origin == UIOrigin::CENTER) {
-            x -= text.getLocalBounds().width / 2;
-            y -= text.getLocalBounds().height / 2;
-        }
-
-        this->text.setPosition(x, y);
-        renderTarget.draw(this->text);
     }
 
     static UIElement* buildElement(const string& label, const Font& font, UIOrigin origin, int fontSize, float x, float y, std::function<void()> callback) {
@@ -132,7 +112,6 @@ public:
         element->text.setCharacterSize(fontSize);
         element->text.setFont(font);
         element->text.setFillColor(sf::Color::Red);
-        element->text.setPosition(0, 0);
         return element;
     }
 };

@@ -7,12 +7,19 @@
 #include <tuple>
 
 #include "resource_info.hpp"
+#include "../core/IUpdatable.hpp"
+#include "../managers.hpp"
 
 namespace ta {
 
 using namespace std;
+using utils::ISingletonService;
 
-class ResourceService {
+struct ResourceServiceConf_t {};
+
+class ResourceService : public ISingletonService<ResourceService, ResourceServiceConf_t> {
+    friend ISingletonService<ResourceService, ResourceServiceConf_t>;
+
 private:
     map<const char*, raw_resource_handler> loaded_resources;
 
@@ -47,7 +54,7 @@ public:
      * @param  out_ptr: ref to the load resource
      * @param  out_size: size of the resource in memory
      */
-    void get(const resource_info& info, const char** out_ptr, long* out_size);
+    void getResource(const resource_info& info, const char** out_ptr, long* out_size);
 
 private:
     /**
@@ -77,6 +84,16 @@ private:
      */
     void asyncLoad(const resource_info& info,
                    promise<raw_resource_handler> promise);
+
+    void update(const Time& time);
+
+protected:
+    void vInit(ResourceServiceConf_t initStructArg) override {}
+
+    void vDestroy() override {};
+
+public:
+    void vUpdate() override {};
 };
 
 }

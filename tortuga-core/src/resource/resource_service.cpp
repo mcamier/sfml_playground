@@ -30,7 +30,7 @@ future<raw_resource_handler> ResourceService::deferredLoad(
         // the resource is already loaded the promise value can me set directly
         const char* ptr;
         long size;
-        get(info, &ptr, &size);
+        getResource(info, &ptr, &size);
         raw_resource_handler hdl(ptr, size);
         pr.set_value(hdl);
     }
@@ -40,14 +40,14 @@ future<raw_resource_handler> ResourceService::deferredLoad(
 
 void ResourceService::immediateLoad(const resource_info& info,
                                     const char** out_ptr, long* out_size) {
-    get(info, out_ptr, out_size);
+    getResource(info, out_ptr, out_size);
     if (*out_ptr == nullptr || *out_size == 0) {
         std::cout << "immediate load of resource " << info.name << std::endl;
         load(info, out_ptr, out_size);
     }
 }
 
-void ResourceService::get(const resource_info& info, const char** out_ptr,
+void ResourceService::getResource(const resource_info& info, const char** out_ptr,
                           long* out_size) {
     if (isLoaded(info)) {
         auto it = loaded_resources.find(info.name);
@@ -116,6 +116,10 @@ void ResourceService::asyncLoad(const resource_info& info,
 
     // set value in the map of loaded resources
     loaded_resources.insert(std::make_pair(info.name, hdl));
+}
+
+void ResourceService::update(const Time & time) {
+
 }
 
 }

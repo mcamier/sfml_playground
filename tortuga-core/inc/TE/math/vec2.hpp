@@ -1,6 +1,8 @@
 #ifndef FOOBAR_VEC2_HPP
 #define FOOBAR_VEC2_HPP
 
+#include <math.h>
+
 namespace ta {
 
 template <typename T>

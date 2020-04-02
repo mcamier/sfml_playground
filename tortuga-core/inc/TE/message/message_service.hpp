@@ -7,10 +7,14 @@
 #include <vector>
 #include "message.hpp"
 #include "subscription.hpp"
+#include "../core/IUpdatable.hpp"
+#include "../managers.hpp"
 
 using namespace std;
 
 namespace ta {
+
+using namespace utils;
 
 /**
  * @brief Internal subscription
@@ -18,11 +22,15 @@ namespace ta {
  * @retval None
  */
 struct _sub {
-  unsigned int id;
-  std::function<void(message)> _func;
+    unsigned int id;
+    std::function<void(message)> _func;
 
-  _sub(unsigned int id, std::function<void(message)> func)
-      : id(id), _func(func) {}
+    _sub(unsigned int id, std::function<void(message)> func)
+            : id(id), _func(func) {}
+};
+
+
+struct MessageServiceConf_t {
 };
 
 /**
@@ -30,68 +38,76 @@ struct _sub {
  * @note
  * @retval None
  */
-class MessageService {
-  friend class Subscription;
+class MessageService : public ISingletonService<MessageService, MessageServiceConf_t> {
+    friend class ISingletonService<MessageService, MessageServiceConf_t>;
 
-  typedef vector<message> messages_t;
-  typedef map<unsigned int, vector<_sub>> subscriptions_t;
+    friend class Subscription;
 
-  messages_t messages;
-  subscriptions_t suscribers;
+    typedef vector<message> messages_t;
+    typedef map<unsigned int, vector<_sub>> subscriptions_t;
 
- public:
-  MessageService() {}
-  MessageService(MessageService &&other) = default;
-  MessageService &operator=(MessageService &&other) = default;
-  ~MessageService() {}
+    messages_t messages;
+    subscriptions_t suscribers;
 
-  /**
-   * @brief Subscribe an instance of observer for a given message type
-   * @note A subscription should not outlive the callback existence !!
-   * @param  obj:
-   */
-  Subscription subscribe(messageType_t msgType,
-                         std::function<void(message)> callback);
+public:
+    MessageService() {}
 
-  /**
-   * @brief
-   * @note A subscription should not outlive the callback existence !!
-   * @retval
-   */
-  template <typename T>
-  Subscription subscribe(messageType_t msgType, void (T::*method)(message),
-                         T *instance) {
-    return this->subscribe(
-        msgType, [instance, method](message msg) { (instance->*method)(msg); });
-  }
+    MessageService(const MessageService&) = delete;
 
-  /**
-   * @brief
-   * @note
-   * @param  &&Subscription:
-   * @retval None
-   */
-  void unsubscribe(Subscription &&Subscription);
+    MessageService& operator=(const MessageService&) = delete;
 
-  /**
-   * @brief Save a message in the event manager in order to be processed during
-   * next update call
-   * @note
-   * @param  msg: Message to dispatch to observers
-   */
-  void sendMessage(message msg);
+    ~MessageService() {}
 
-  /**
-   * @brief Forward all the messages to the observers
-   */
-  void update();
+    /**
+     * @brief Subscribe an instance of observer for a given message type
+     * @note A subscription should not outlive the callback existence !!
+     * @param  obj:
+     */
+    Subscription subscribe(messageType_t msgType, std::function<void(message)> callback);
 
- private:
-  void unsubscribe(unsigned int sub_id);
+    /**
+     * @brief
+     * @note A subscription should not outlive the callback existence !!
+     * @retval
+     */
+    template<typename T>
+    Subscription subscribe(messageType_t msgType, void (T::*method)(message), T* instance) {
+        return this->subscribe(msgType, [instance, method](message msg) { (instance->*method)(msg); });
+    }
 
-  // no move copy or assignement
-  MessageService(const MessageService &) = delete;
-  MessageService &operator=(const MessageService &) = delete;
+    /**
+     * @brief
+     * @note
+     * @param  &&Subscription:
+     * @retval None
+     */
+    void unsubscribe(Subscription&& Subscription);
+
+    /**
+     * @brief Save a message in the event manager in order to be processed during
+     * next update call
+     * @note
+     * @param  msg: Message to dispatch to observers
+     */
+    void sendMessage(message msg);
+
+protected:
+    void vInit(MessageServiceConf_t initStructArg) override {};
+
+    void vDestroy() override {};
+
+public:
+    /**
+     * @brief Forward all the messages to the observers
+     */
+    void vUpdate() override {}
+
+
+    void update(const Time& time);
+
+private:
+    void unsubscribe(unsigned int sub_id);
+
 };
 
 }  // namespace ta

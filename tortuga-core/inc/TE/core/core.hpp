@@ -45,7 +45,7 @@ inline vector<string> GetFileList(
     if (sp[0] == '*') {
         sp.erase(sp.begin());
     }
-    if (sp.length() - 1 == '*') {
+    if (sp[sp.length()] - 1 == '*') {
         sp.pop_back();
     }
     struct dirent* epdf;

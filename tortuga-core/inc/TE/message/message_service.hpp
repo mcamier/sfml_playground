@@ -8,7 +8,8 @@
 #include "message.hpp"
 #include "subscription.hpp"
 #include "../core/IUpdatable.hpp"
-#include "../managers.hpp"
+#include "../services/configuration.hpp"
+#include "../services/service.hpp"
 
 using namespace std;
 
@@ -100,10 +101,7 @@ public:
     /**
      * @brief Forward all the messages to the observers
      */
-    void vUpdate() override {}
-
-
-    void update(const Time& time);
+    void vUpdate(const Time& time) override;
 
 private:
     void unsubscribe(unsigned int sub_id);

@@ -1,7 +1,8 @@
 #ifndef TORTUGA_LOGGER_HPP
 #define TORTUGA_LOGGER_HPP
 
-#include "managers.hpp"
+#include "services/configuration.hpp"
+#include "services/service.hpp"
 #include "memory.hpp"
 #include "log_utils.hpp"
 
@@ -25,8 +26,8 @@ class LoggerServiceConf : public IServiceConfiguration {
     CONF_PROPERTY(LogChannelFlag, logChannel)
     CONF_PROPERTY(bool, consoleLogEnabled)
     CONF_PROPERTY(bool, fileLogEnabled)
-    CONF_PROPERTY(const char*, fileLogFolder)
-    CONF_PROPERTY(const char*, fileLogBaseName)
+    CONF_PROPERTY(std::string, fileLogFolder)
+    CONF_PROPERTY(std::string, fileLogBaseName)
 };
 
 
@@ -200,7 +201,7 @@ public:
 
     LoggerService &operator=(const LoggerService &) = delete;
 
-    void vUpdate() override;
+    void vUpdate(const sf::Time& time) override;
 
     //
     //Dispatch a log among all the managed loggers

@@ -50,16 +50,15 @@ void FileLogger::writePendingLogsIntoFileAndSwap() {
     FILE* fp = getLogFile();
     if (fp != nullptr) {
         // write all entries from previous vector in file
-        for (std::list<logEntry_t*>::iterator iter = currentEntries.begin();
-             iter != currentEntries.end(); ++iter) {
-            int lvl = static_cast<int>((*iter)->lvl);
+        for (auto& currentEntrie : currentEntries) {
+            int lvl = static_cast<int>(currentEntrie->lvl);
             fprintf(
                     fp,
                     "[%7s] %35s:%d\t%s\n",
                     LOG_LEVEL_NAMES[lvl],
-                    (*iter)->file,
-                    (*iter)->line,
-                    (*iter)->message);
+                    currentEntrie->file,
+                    currentEntrie->line,
+                    currentEntrie->message);
         }
         fclose(fp);
     } else {
@@ -118,19 +117,19 @@ FILE* FileLogger::getLogFile() {
 
 
 void LoggerService::vInit(LoggerServiceConf args) {
-    /*if (args.fileLogEnabled) {
-        this->pFileLogger = new FileLogger(args.logLevel,
-                                           args.logChannel,
-                                           args.fileLogFolder,
-                                           args.fileLogBaseName);
+    if(args.get_fileLogEnabled()) {
+        this->pFileLogger = new FileLogger(args.get_logLevel(),
+                                           args.get_logChannel(),
+                                           args.get_fileLogFolder().c_str(),
+                                           args.get_fileLogBaseName().c_str());
     }
-    if (args.consoleLogEnabled) {
-        this->pConsoleLogger = new ConsoleLogger(args.logLevel,
-                                                 args.logChannel);
-    }*/
+    if(args.get_consoleLogEnabled()) {
+        this->pConsoleLogger = new ConsoleLogger(args.get_logLevel(),
+                                                 args.get_logChannel());
+    }
 }
 
-void LoggerService::vUpdate() {}
+void LoggerService::vUpdate(const sf::Time& time) {}
 
 void LoggerService::vDestroy() {
     if (this->pConsoleLogger != nullptr) {

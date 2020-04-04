@@ -33,7 +33,7 @@ bool ScreenService::handleEvent(const Event &event) {
     return false;
 }
 
-void ScreenService::update(const Time &time) {
+void ScreenService::vUpdate(const Time& time) {
     bool isBlocked = false;
 
     auto itr = screenList.begin();

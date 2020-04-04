@@ -19,14 +19,18 @@ set(TORTUGA_CORE_HEADER
         inc/TE/core/IRenderable.hpp
         inc/TE/core/IUpdatable.hpp
         inc/TE/core/core.hpp
+        inc/TE/services/configuration.hpp
+        inc/TE/services/service.hpp
         inc/TE/GameApp.hpp
         inc/TE/memory.hpp
         inc/TE/logger.hpp
         inc/TE/profiler.hpp
-        inc/TE/WindowService.hpp)
+        inc/TE/InputService.hpp
+        inc/TE/WindowService.hpp inc/TE/services/configuration.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
+        src/services/configuration.cpp
         src/resource/resource_service.cpp
         src/message/message_service.cpp
         src/message/subscription.cpp
@@ -36,7 +40,6 @@ set(TORTUGA_CORE_SOURCE
         src/screen/ui/UIScreen.cpp
         src/GameApp.cpp
         src/memory.cpp
-        src/managers.cpp
         src/profiler.cpp
         src/logger.cpp
 )

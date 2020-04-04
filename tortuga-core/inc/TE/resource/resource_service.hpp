@@ -8,7 +8,8 @@
 
 #include "resource_info.hpp"
 #include "../core/IUpdatable.hpp"
-#include "../managers.hpp"
+#include "../services/configuration.hpp"
+#include "../services/service.hpp"
 
 namespace ta {
 
@@ -86,15 +87,13 @@ private:
     void asyncLoad(const resource_info& info,
                    promise<raw_resource_handler> promise);
 
-    void update(const Time& time);
-
 protected:
     void vInit(ResourceServiceConf initStructArg) override {}
 
     void vDestroy() override {};
 
 public:
-    void vUpdate() override {};
+    void vUpdate(const Time& time) override {};
 };
 
 }

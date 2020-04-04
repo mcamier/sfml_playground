@@ -5,8 +5,10 @@
 #include <chrono>
 #include <string>
 #include <iostream>
+#include <SFML/System/Time.hpp>
 
-#include "managers.hpp"
+#include "services/configuration.hpp"
+#include "services/service.hpp"
 
 #ifdef PROFILING_ENABLED
 #define BEGIN_PROFILING(name) \
@@ -118,7 +120,7 @@ public:
 
     // Update the manager, should be called every frames to register the samples gathered during the current frame
     // into global datas. Compute from pikes and average for all sample category.
-    void vUpdate() override;
+    void vUpdate(const sf::Time& time) override;
 
     // Register a sample
     // param name : the name of the category the sample belongs to

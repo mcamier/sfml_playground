@@ -8,7 +8,8 @@
 #include "../core/IEventHandler.hpp"
 #include "../core/IUpdatable.hpp"
 #include "../core/IRenderable.hpp"
-#include "../managers.hpp"
+#include "../services/configuration.hpp"
+#include "../services/service.hpp"
 
 namespace ta {
 
@@ -43,9 +44,7 @@ public:
     /**
      * @brief Forward all the messages to the observers
      */
-    void vUpdate() override {}
-
-    void update(const Time &time);
+    void vUpdate(const Time&) override;
 
 };
 

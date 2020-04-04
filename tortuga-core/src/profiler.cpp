@@ -17,7 +17,7 @@ AutoProfiler::~AutoProfiler() {
 }
 
 
-void ProfilerService::vUpdate() {
+void ProfilerService::vUpdate(const sf::Time& time) {
     for (auto &entry : lastFrameSamplesMap) {
         auto globalEntry = globalSamplesMap.find(entry.first);
         if (globalEntry == globalSamplesMap.end()) {

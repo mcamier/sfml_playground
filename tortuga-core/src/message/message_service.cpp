@@ -47,7 +47,7 @@ void MessageService::sendMessage(message msg) {
     messages.push_back(std::move(msg));
 }
 
-void MessageService::update(const Time& time) {
+void MessageService::vUpdate(const Time& time) {
     // perform a copy of the vector of the last frame messages
     messages_t lastFrameMsg = messages;
     // clear messages in case of new messages sent by currently processed messages

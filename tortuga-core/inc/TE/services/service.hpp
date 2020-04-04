@@ -6,14 +6,17 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <SFML/System/Time.hpp>
 
-#include "common.hpp"
-#include "hash.hpp"
+#include "../common.hpp"
+#include "../hash.hpp"
+#include "configuration.hpp"
 
 namespace ta::utils {
 
 using std::string;
 using std::map;
+
 
 // Enumerate the different status a manager could have
 enum ServiceState {
@@ -21,19 +24,6 @@ enum ServiceState {
     INITIALIZED = 0x02,
     DESTROYED = 0x04
 };
-
-class IServiceConfiguration {
-protected:
-    map<unsigned int, string> properties;
-
-    template<typename T> T getCastedProperty(const std::string& value);
-
-public:
-    void setProperty(const string& property, const string& value) {
-        properties.insert(std::make_pair(makeHash(property), value));
-    };
-};
-
 
 //
 // Must be used inside a class extending the interface IServiceConfiguration
@@ -93,7 +83,7 @@ protected:
     virtual void vDestroy() = 0;
 
 public:
-    virtual void vUpdate() = 0;
+    virtual void vUpdate(const sf::Time& time) = 0;
 };
 
 
@@ -109,7 +99,7 @@ class ISingletonService :
         public ISingleton<T>,
         public virtual IService<T, INIT_T> {
 public:
-    static void initialize(INIT_T initStructArg) {
+    static void initialize(INIT_T initStructArg = {}) {
         static_assert(std::is_base_of<ISingletonService, T>::value, "Type T must be derivated from Manager");
 
         if ((ISingleton<T>::_state() & ServiceState::UNINITIALIZED) == ServiceState::UNINITIALIZED) {

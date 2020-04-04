@@ -8,28 +8,16 @@
 
 #include "../inc/TE/logger.hpp"
 #include "../inc/TE/core/core.hpp"
-
-#include "../inc/TE/hash.hpp"
+#include "../inc/TE/InputService.hpp"
 
 namespace ta {
 
 using namespace utils;
 
-const int WIDTH = 800;
-const int HEIGHT = 800;
-const int FRAMERATE_LIMIT = 60;
-const bool VSYNC = true;
-const string title = "ONG!";
-
 int GameApp::run() {
     sf::Event event;
     sf::Clock clock;
     sf::Sprite sprite;
-
-    // Set window
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), title);
-    window.setFramerateLimit(FRAMERATE_LIMIT);
-    window.setVerticalSyncEnabled(VSYNC);
 
     this->initializeSubSystems();
     this->vInitialize();
@@ -45,46 +33,33 @@ int GameApp::run() {
             elapsed = sf::milliseconds(500);
         }
 
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                shouldExit = true;
-            }
-            ScreenService::get().handleEvent(event);
-        }
-
-        ScreenService::get().update(elapsed);
-        MessageService::get().update(elapsed);
+        InputService::get().vUpdate(elapsed);
+        ScreenService::get().vUpdate(elapsed);
+        MessageService::get().vUpdate(elapsed);
 
         BEGIN_PROFILING("drawing")
-            window.clear(sf::Color::Black);
-            RenderTexture render_tex;
-            render_tex.create(WIDTH, HEIGHT);
-
-            ScreenService::get().render(render_tex);
-            render_tex.display();
-            sprite = sf::Sprite(render_tex.getTexture());
-            window.draw(sprite);
-            window.display();
+            RenderTexture& target = WindowService::get().getCurrentTarget();
+            ScreenService::get().render(target);
+            WindowService::get().draw();
         END_PROFILING
 
-        ProfilerService::get().vUpdate();
+        ProfilerService::get().vUpdate(elapsed);
     }
 
     this->vDestroy();
     this->destroySubSystems();
-    window.close();
 
     return 0;
 }
 
 void GameApp::initializeSubSystems() {
     BEGIN_PROFILING("Initialize all subsystems")
-        LoggerServiceConf loggerServiceConf = {};
-        WindowServiceConf windowServiceConf = {};
-        ProfilerServiceConf profilerServiceConf = {};
-        MessageServiceConf messageServiceConf = {};
-        ScreenServiceConf screenServiceConf = {};
-        ResourceServiceConf resourceServiceConf = {};
+        LoggerServiceConf loggerServiceConf;
+        WindowServiceConf windowServiceConf;
+        ProfilerServiceConf profilerServiceConf;
+        MessageServiceConf messageServiceConf;
+        ScreenServiceConf screenServiceConf;
+        ResourceServiceConf resourceServiceConf;
         this->readConfIni(&loggerServiceConf, &windowServiceConf, &profilerServiceConf, &messageServiceConf,
                           &screenServiceConf, &resourceServiceConf);
 
@@ -94,9 +69,11 @@ void GameApp::initializeSubSystems() {
         ProfilerService::initialize(profilerServiceConf);
         MessageService::initialize(messageServiceConf);
         WindowService::initialize(windowServiceConf);
+        InputService::initialize();
         ResourceService::initialize(resourceServiceConf);
-        //WindowService::initialize();
         ScreenService::initialize(screenServiceConf);
+        REP_DEBUG("All subsystems initialized", LogChannelFlag::DEFAULT)
+
     END_PROFILING
 
     MessageService::get().subscribe(EXIT_GAME_REQUESTED, [this](message msg) { this->shouldExit = true; });
@@ -105,7 +82,6 @@ void GameApp::initializeSubSystems() {
 void GameApp::destroySubSystems() {
     REP_DEBUG("Destroy all subsystems", LogChannelFlag::DEFAULT)
     ScreenService::destroy();
-    //WindowService::destroy();
     ResourceService::destroy();
     WindowService::destroy();
     MessageService::destroy();

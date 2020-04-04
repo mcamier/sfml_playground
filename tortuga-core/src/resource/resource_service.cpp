@@ -118,8 +118,4 @@ void ResourceService::asyncLoad(const resource_info& info,
     loaded_resources.insert(std::make_pair(info.name, hdl));
 }
 
-void ResourceService::update(const Time & time) {
-
-}
-
 }

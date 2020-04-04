@@ -11,11 +11,9 @@
 #include "TE/resource/resource_service.hpp"
 #include "TE/screen/Screen.hpp"
 #include "TE/screen/ScreenService.hpp"
-#include "TE/core/ServiceLocator.hpp"
 #include "game_screen.hpp"
 
 using namespace std;
-using ta::ServiceLocator;
 
 class LoadScreen : public Screen {
 private:

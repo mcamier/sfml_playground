@@ -23,16 +23,15 @@ class ResourceService : public ISingletonService<ResourceService, ResourceServic
     friend ISingletonService<ResourceService, ResourceServiceConf>;
 
 private:
-    map<const char*, raw_resource_handler> loaded_resources;
+    map<ResourceId, raw_resource_handler> loaded_resources;
+    map<ResourceId, future<raw_resource_handler>> inProgress;
 
 public:
     /**
      * @brief Load asynchronously a resource from the bundle file
      * @note Rely on the EventService to informs when the resource is loaded
-     * @param  info: Resource to load, should be listed as static field in the
-     * ResourceManifest type
      */
-    future<raw_resource_handler> deferredLoad(const resource_info& info);
+    void deferredLoad(const resource_info& info);
 
     /**
      * @brief Load synchronously a resource from the bundle file
@@ -43,8 +42,7 @@ public:
      * @param  out_ptr: ref to the load resource
      * @param  out_size: size of the resource in memory
      */
-    void immediateLoad(const resource_info& info, const char** out_ptr,
-                       long* out_size);
+    void immediateLoad(const resource_info& info, const void** out_ptr, long* out_size);
 
     /**
      * @brief Get the location and size of a loaded resource
@@ -56,7 +54,7 @@ public:
      * @param  out_ptr: ref to the load resource
      * @param  out_size: size of the resource in memory
      */
-    void getResource(const resource_info& info, const char** out_ptr, long* out_size);
+    void getResource(const resource_info& info, const void** out_ptr, long* out_size);
 
 private:
     /**
@@ -75,25 +73,20 @@ private:
      * @param  *out_size:
      * @retval None
      */
-    void load(const resource_info& info, const char** out_ptr, long* out_size);
+    void load(const resource_info& info, const void** out_ptr, long* out_size);
 
     /**
-     * @brief
-     * @note
-     * @param  &info:
-     * @param  promise:
-     * @retval None
+     * @brief Aimed to be called in a separate thread for non-blocking resource loading
      */
-    void asyncLoad(const resource_info& info,
-                   promise<raw_resource_handler> promise);
+    void asyncLoad(const resource_info& info, promise<raw_resource_handler> promise);
 
 protected:
     void vInit(ResourceServiceConf initStructArg) override {}
 
-    void vDestroy() override {};
+    void vDestroy() override;
 
 public:
-    void vUpdate(const Time& time) override {};
+    void vUpdate(const Time& time) override;
 };
 
 }

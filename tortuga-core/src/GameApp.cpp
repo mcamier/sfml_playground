@@ -33,6 +33,7 @@ int GameApp::run() {
             elapsed = sf::milliseconds(500);
         }
 
+        ResourceService::get().vUpdate(elapsed);
         InputService::get().vUpdate(elapsed);
         ScreenService::get().vUpdate(elapsed);
         MessageService::get().vUpdate(elapsed);
@@ -73,7 +74,6 @@ void GameApp::initializeSubSystems() {
         ResourceService::initialize(resourceServiceConf);
         ScreenService::initialize(screenServiceConf);
         REP_DEBUG("All subsystems initialized", LogChannelFlag::DEFAULT)
-
     END_PROFILING
 
     MessageService::get().subscribe(EXIT_GAME_REQUESTED, [this](message msg) { this->shouldExit = true; });

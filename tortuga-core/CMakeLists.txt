@@ -15,6 +15,7 @@ set(TORTUGA_CORE_HEADER
         inc/TE/screen/ScreenService.hpp
         inc/TE/screen/ui/UIScreen.hpp
         inc/TE/screen/ui/element/UIElement.hpp
+        inc/TE/core/origin.hpp
         inc/TE/core/IEventHandler.hpp
         inc/TE/core/IRenderable.hpp
         inc/TE/core/IUpdatable.hpp
@@ -26,7 +27,12 @@ set(TORTUGA_CORE_HEADER
         inc/TE/logger.hpp
         inc/TE/profiler.hpp
         inc/TE/InputService.hpp
-        inc/TE/WindowService.hpp inc/TE/services/configuration.hpp)
+        inc/TE/WindowService.hpp
+        inc/TE/services/configuration.hpp
+        inc/TE/ecs/entity.hpp
+        inc/TE/ecs/ecs.hpp
+        inc/TE/ecs/component.hpp
+        inc/TE/Collider.hpp inc/TE/ecs/system.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
@@ -41,8 +47,7 @@ set(TORTUGA_CORE_SOURCE
         src/GameApp.cpp
         src/memory.cpp
         src/profiler.cpp
-        src/logger.cpp
-)
+        src/logger.cpp)
 
 add_library(tortuga-core 
         ${TORTUGA_CORE_HEADER} 

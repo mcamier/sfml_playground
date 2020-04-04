@@ -8,6 +8,7 @@
 #include <SFML/Graphics/Text.hpp>
 
 #include "../../../math/vec2.hpp"
+#include "../../../core/origin.hpp"
 #include "../../../core/IEventHandler.hpp"
 #include "../../../core/IRenderable.hpp"
 #include "../../../math/math.hpp"
@@ -20,18 +21,10 @@ using ta::vec2;
 using std::string;
 using std::function;
 
-enum class UIOrigin {
-    TOP_LEFT,
-    TOP_RIGHT,
-    BOTTOM_LEFT,
-    BOTTOM_RIGHT,
-    CENTER
-};
-
 class UIElement : public IEventHandler, public IRenderable {
 
 protected:
-    UIOrigin origin;
+    Origin origin;
     vec2f position;
 
 };
@@ -46,13 +39,13 @@ public:
         float x = this->position.x * renderTarget.getSize().x;
         float y = this->position.y * renderTarget.getSize().y;
 
-        if (origin == UIOrigin::TOP_RIGHT || origin == UIOrigin::BOTTOM_RIGHT) {
+        if (origin == Origin::TOP_RIGHT || origin == Origin::BOTTOM_RIGHT) {
             x -= text.getLocalBounds().width;
         }
-        if (origin == UIOrigin::BOTTOM_RIGHT || origin == UIOrigin::BOTTOM_LEFT) {
+        if (origin == Origin::BOTTOM_RIGHT || origin == Origin::BOTTOM_LEFT) {
             y -= text.getLocalBounds().height;
         }
-        if (origin == UIOrigin::CENTER) {
+        if (origin == Origin::CENTER) {
             x -= text.getLocalBounds().width / 2;
             y -= text.getLocalBounds().height / 2;
         }
@@ -72,7 +65,7 @@ public:
         return true;
     }
 
-    static UIElement* buildElement(const string& label, const Font& font, UIOrigin origin, int fontSize, float x, float y) {
+    static UIElement* buildElement(const string& label, const Font& font, Origin origin, int fontSize, float x, float y) {
         UILabel* element = new UILabel();
         element->origin = origin;
         element->position.x = x;
@@ -102,7 +95,7 @@ public:
         return true;
     }
 
-    static UIElement* buildElement(const string& label, const Font& font, UIOrigin origin, int fontSize, float x, float y, std::function<void()> callback) {
+    static UIElement* buildElement(const string& label, const Font& font, Origin origin, int fontSize, float x, float y, std::function<void()> callback) {
         UIButton* element = new UIButton();
         element->callback = callback;
         element->origin = origin;

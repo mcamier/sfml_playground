@@ -20,26 +20,11 @@
 #include "ball.hpp"
 #include "header.hpp"
 #include "player.hpp"
+#include "components.hpp"
+#include "TE/ecs/ecs.hpp"
 
 using namespace std;
 using namespace ta;
-
-enum class pickupType {
-    INCREASE_BALL_SPEED,
-    DECREASE_BALL_SPEED,
-    SPLIT_BALL
-};
-
-struct Pickup {
-public:
-    pickupType type;
-    // angle and distFromCenter are used to know the position of the pickup
-    int angle;
-    float distFromCenter;
-
-    Pickup(pickupType type, int angle, float distFromCenter) : type(type), angle(angle),
-                                                               distFromCenter(distFromCenter) {}
-};
 
 class GameLogic : public IUpdatable {
 
@@ -60,14 +45,15 @@ public:
     GameLogic() {
         balls[0] = Ball(0, 20);
         // todo
-        const char* bytes;
+        const void* bytes;
         long size;
         ResourceService::get().getResource(ResourceManifest::FONT, &bytes, &size);
         ResourceService::get().getResource(ResourceManifest::BOOM, &bytes, &size);
 
         subBallLost = MessageService::get().subscribe(MSG_BALL_LOST, &GameLogic::onBallLost, this);
         subPlayerWin = MessageService::get().subscribe(MSG_PLAYER_WIN, &GameLogic::onPlayerWin, this);
-        subPlayerCollideBall = MessageService::get().subscribe(MSG_PLAYER_COLLIDE_BALL, &GameLogic::onPlayerCollidesBall, this);
+        subPlayerCollideBall = MessageService::get().subscribe(MSG_PLAYER_COLLIDE_BALL,
+                                                               &GameLogic::onPlayerCollidesBall, this);
     }
 
     bool isRoundActive() {
@@ -338,6 +324,28 @@ public:
         this->logic = new GameLogic();
         this->renderer = new GameRenderer(*logic);
         this->transitionDurationSec = 1.0f;
+
+        COngPlayer* ongPlayer = new COngPlayer();
+        CPosition* pposition = new CPosition();
+        CRenderer* prendered = new CRenderer();
+        CHitbox* phitbox = new CHitbox();
+
+        COngBall* ball = new COngBall();
+        CPosition* bposition = new CPosition();
+        CKinetic* bkinetic = new CKinetic();
+        CHitbox* bhitbox = new CHitbox();
+        CRenderer* brendered = new CRenderer();
+
+        RenderSystem* renderSystem = new RenderSystem();
+
+    }
+
+    void createPlayer() {
+
+    }
+
+    void createBall() {
+
     }
 
     /**

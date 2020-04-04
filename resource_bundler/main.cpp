@@ -95,11 +95,12 @@ void writeManifestCppFile(resource_info_list* resourceInfoList) {
     int count = 0;
     ofstream fout("manifest.cpp", ios::trunc | ios::out);
     resource_info_list* next = resourceInfoList;
-    fout << "#include \"manifest.hpp\"" << endl;
+    fout << "#include \"manifest.hpp\"" << endl << endl;
+    fout << "namespace ta {" << endl;
     fout << endl;
     while (next != nullptr) {
         fout << "const resource_info ResourceManifest::" << next->info.name
-             << " = resource_info(\"" << next->info.name << "\", \""
+             << " = resource_info(" << count << ", \"" << next->info.name << "\", \""
              << next->info.extension << "\", " << next->info.head << ", "
              << next->info.size << ");" << endl;
         next = next->next;
@@ -120,6 +121,7 @@ void writeManifestCppFile(resource_info_list* resourceInfoList) {
         next = next->next;
     }
     fout << "};" << endl;
+    fout << "}" << endl;
 
     fout.close();
 }
@@ -131,6 +133,7 @@ void writeManifestHppFile(resource_info_list* resourceInfoList) {
     fout << "#ifndef MANIFEST_HPP" << endl;
     fout << "#define MANIFEST_HPP" << endl << endl;
     fout << "#include \"TE/resource/resource_info.hpp\"" << endl << endl;
+    fout << "namespace ta {" << endl << endl;
 
     fout << "class ResourceManifest {" << endl;
     fout << "public:" << endl;
@@ -143,6 +146,7 @@ void writeManifestHppFile(resource_info_list* resourceInfoList) {
     fout << "\tstatic const int _COUNT;" << endl;
     fout << "\tstatic const resource_info _ALL[];" << endl;
     fout << "};" << endl;
+    fout << "}" << endl;
     fout << "#endif";
     fout.close();
 }

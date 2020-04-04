@@ -11,7 +11,8 @@ set(ong_src
         header/player.hpp
         header/load_screen.hpp
         header/menu_screen.hpp
-        header/game_screen.hpp)
+        header/game_screen.hpp
+        header/components.hpp)
 
 # Generate bundle file along with c++ class relative to game assets
 add_custom_command(OUTPUT manifest.cpp manifest.hpp bundle.bin

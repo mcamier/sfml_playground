@@ -1,0 +1,8 @@
+//
+// Created by Mickael Camier on 03/04/2020.
+//
+
+#ifndef TORTUGA_WINDOWSERVICE_HPP
+#define TORTUGA_WINDOWSERVICE_HPP
+
+#endif //TORTUGA_WINDOWSERVICE_HPP

@@ -14,11 +14,12 @@ namespace ta {
 
 using namespace std;
 using utils::ISingletonService;
+using utils::IServiceConfiguration;
 
-struct ResourceServiceConf_t {};
+struct ResourceServiceConf : public IServiceConfiguration {};
 
-class ResourceService : public ISingletonService<ResourceService, ResourceServiceConf_t> {
-    friend ISingletonService<ResourceService, ResourceServiceConf_t>;
+class ResourceService : public ISingletonService<ResourceService, ResourceServiceConf> {
+    friend ISingletonService<ResourceService, ResourceServiceConf>;
 
 private:
     map<const char*, raw_resource_handler> loaded_resources;
@@ -88,7 +89,7 @@ private:
     void update(const Time& time);
 
 protected:
-    void vInit(ResourceServiceConf_t initStructArg) override {}
+    void vInit(ResourceServiceConf initStructArg) override {}
 
     void vDestroy() override {};
 

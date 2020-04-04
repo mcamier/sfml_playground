@@ -2,6 +2,12 @@
 #define TORTUGA_GAMEAPP_HPP
 
 #include "message/message.hpp"
+#include "screen/ScreenService.hpp"
+#include "resource/resource_service.hpp"
+#include "WindowService.hpp"
+#include "message/message_service.hpp"
+#include "profiler.hpp"
+#include "logger.hpp"
 
 namespace ta {
 
@@ -26,11 +32,23 @@ protected:
     virtual void vDestroy() {};
 
 private:
-    void readConfIni();
+    void readConfIni(LoggerServiceConf* loggerServiceConf,
+                     WindowServiceConf* windowServiceConf,
+                     ProfilerServiceConf* profilerServiceConf,
+                     MessageServiceConf* messageServiceConf,
+                     ScreenServiceConf* screenServiceConf,
+                     ResourceServiceConf* resourceServiceConf);
 
     void initializeSubSystems();
 
     void destroySubSystems();
+
+    // methods related to ini file reading
+    void trim(string& line);
+    bool isGroup(string& line);
+    bool isValidGroup(const string& groupName);
+    bool extract(const string& line, string* outKey, string* outValue);
+
 };
 
 }

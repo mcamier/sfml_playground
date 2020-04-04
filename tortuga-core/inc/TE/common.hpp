@@ -34,5 +34,4 @@
 #define BREAK()
 #endif
 
-
 #endif //TA_COMMON_HPP

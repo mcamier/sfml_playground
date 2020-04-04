@@ -23,7 +23,7 @@ set(TORTUGA_CORE_HEADER
         inc/TE/memory.hpp
         inc/TE/logger.hpp
         inc/TE/profiler.hpp
-        )
+        inc/TE/WindowService.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
@@ -36,6 +36,7 @@ set(TORTUGA_CORE_SOURCE
         src/screen/ui/UIScreen.cpp
         src/GameApp.cpp
         src/memory.cpp
+        src/managers.cpp
         src/profiler.cpp
         src/logger.cpp
 )
@@ -63,3 +64,12 @@ target_link_libraries(tortuga-core
             sfml-window
             sfml-system
             sfml-audio)
+
+# test
+enable_testing()
+include(GoogleTest)
+add_executable(unitTests test/test.cpp)
+target_link_libraries(unitTests PRIVATE gtest)
+gtest_add_tests(
+        TARGET unitTests
+)

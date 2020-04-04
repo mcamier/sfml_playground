@@ -4,13 +4,12 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <fstream>
+#include <algorithm>
 
-#include "../inc/TE/message/message_service.hpp"
-#include "../inc/TE/resource/resource_service.hpp"
-#include "../inc/TE/screen/ScreenService.hpp"
 #include "../inc/TE/logger.hpp"
-#include "../inc/TE/profiler.hpp"
 #include "../inc/TE/core/core.hpp"
+
+#include "../inc/TE/hash.hpp"
 
 namespace ta {
 
@@ -80,27 +79,21 @@ int GameApp::run() {
 
 void GameApp::initializeSubSystems() {
     BEGIN_PROFILING("Initialize all subsystems")
-        this->readConfIni();
+        LoggerServiceConf loggerServiceConf = {};
+        WindowServiceConf windowServiceConf = {};
+        ProfilerServiceConf profilerServiceConf = {};
+        MessageServiceConf messageServiceConf = {};
+        ScreenServiceConf screenServiceConf = {};
+        ResourceServiceConf resourceServiceConf = {};
+        this->readConfIni(&loggerServiceConf, &windowServiceConf, &profilerServiceConf, &messageServiceConf,
+                          &screenServiceConf, &resourceServiceConf);
 
-        LoggerServiceInitializeArgs_t loggerManagerInitArgs = {};
-        loggerManagerInitArgs.fileLogEnabled = true;
-        loggerManagerInitArgs.fileLogBaseName = "log";
-        loggerManagerInitArgs.fileLogFolder = "D:\\workspace\\sfml_playground\\cmake-build-debug-mingw64\\ong";
-        loggerManagerInitArgs.consoleLogEnabled = true;
-        loggerManagerInitArgs.logLevel = LogLevelBitsFlag::DEBUG;
-        loggerManagerInitArgs.logChannel = LogChannelBitsFlag::DEFAULT | LogChannelBitsFlag::RENDER;
-
-        ProfilerServiceInitializeArgs_t profilerManagerInitArgs = {};
-        MessageServiceConf_t messageServiceConf = {};
-        ScreenServiceConf_t screenServiceConf = {};
-        ResourceServiceConf_t resourceServiceConf = {};
-
-        LoggerService::initialize(loggerManagerInitArgs);
         // LoggerService must be initialized before doing any logging
-        REP_DEBUG("Initialize all subsystems", LogChannelBitsFlag::DEFAULT)
-        ProfilerService::initialize(profilerManagerInitArgs);
-
+        LoggerService::initialize(loggerServiceConf);
+        REP_DEBUG("Initialize all subsystems", LogChannelFlag::DEFAULT)
+        ProfilerService::initialize(profilerServiceConf);
         MessageService::initialize(messageServiceConf);
+        WindowService::initialize(windowServiceConf);
         ResourceService::initialize(resourceServiceConf);
         //WindowService::initialize();
         ScreenService::initialize(screenServiceConf);
@@ -110,26 +103,117 @@ void GameApp::initializeSubSystems() {
 }
 
 void GameApp::destroySubSystems() {
-    REP_DEBUG("Destroy all subsystems", LogChannelBitsFlag::DEFAULT)
+    REP_DEBUG("Destroy all subsystems", LogChannelFlag::DEFAULT)
     ScreenService::destroy();
     //WindowService::destroy();
     ResourceService::destroy();
+    WindowService::destroy();
     MessageService::destroy();
     ProfilerService::destroy();
     LoggerService::destroy();
 }
 
-void GameApp::readConfIni() {
+void GameApp::readConfIni(LoggerServiceConf* loggerServiceConf,
+                          WindowServiceConf* windowServiceConf,
+                          ProfilerServiceConf* profilerServiceConf,
+                          MessageServiceConf* messageServiceConf,
+                          ScreenServiceConf* screenServiceConf,
+                          ResourceServiceConf* resourceServiceConf) {
+
     string path = GetWorkingDir() + string("conf.ini");
+    string loggerName = "logger";
+    string windowName = "window";
+    string profilerName = "profiler";
+    string messageName = "message";
+    string screenName = "screen";
+    string resourceName = "resource";
 
     ifstream file;
     string line;
     file.open(path.c_str(), std::ios::in);
-    while (std::getline(file, line)) {
-        std::cout << line << std::endl;
-    }
 
+    string lastGroupName = "";
+    bool skipToNextGroup = false;
+
+    while (std::getline(file, line)) {
+        // ignore white line
+        if (line.length() == 0) { continue; }
+        trim(line);
+
+        if (this->isGroup(line)) {
+            lastGroupName = string(line);
+            skipToNextGroup = !this->isValidGroup(lastGroupName);
+        } else if (!lastGroupName.empty() && !skipToNextGroup) {
+            string key, value;
+
+            if (extract(line, &key, &value)) {
+                // todo append parameter to conf
+                if (std::equal(loggerName.begin(), loggerName.end(), lastGroupName.begin())) {
+                    loggerServiceConf->setProperty(key, value);
+                } else if (std::equal(windowName.begin(), windowName.end(), lastGroupName.begin())) {
+                    windowServiceConf->setProperty(key, value);
+                } else if (std::equal(profilerName.begin(), profilerName.end(), lastGroupName.begin())) {
+                    profilerServiceConf->setProperty(key, value);
+                } else if (std::equal(messageName.begin(), messageName.end(), lastGroupName.begin())) {
+                    messageServiceConf->setProperty(key, value);
+                } else if (std::equal(screenName.begin(), screenName.end(), lastGroupName.begin())) {
+                    screenServiceConf->setProperty(key, value);
+                } else if (std::equal(resourceName.begin(), resourceName.end(), lastGroupName.begin())) {
+                    resourceServiceConf->setProperty(key, value);
+                }
+            }
+        }
+    }
 }
 
+void GameApp::trim(string& line) {
+    if (line.length() == 0) return;
+
+    while (line[0] == ' ') {
+        line.erase(line.begin());
+    }
+    while (line[line.length() - 1] == ' ') {
+        line.pop_back();
+    }
+}
+
+bool GameApp::isGroup(string& line) {
+    if (line.length() == 0) return false;
+    if (line[0] == '[' && line[line.length() - 1] == ']') {
+        line.erase(line.begin());
+        line.pop_back();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool GameApp::isValidGroup(const string& groupName) {
+    //todo implement me
+    return true;
+}
+
+bool GameApp::extract(const string& line, string* outKey, string* outValue) {
+    bool equalCharReached = false;
+    for (int i = 0; i < line.length(); ++i) {
+        if (!equalCharReached) {
+            if (line[i] == '=') {
+                equalCharReached = true;
+            } else {
+                outKey->push_back(line[i]);
+            }
+        } else {
+            outValue->push_back(line[i]);
+        }
+    }
+
+    trim(*outKey);
+    trim(*outValue);
+
+    outKey->length();
+    outValue->length();
+
+    return !(outKey->length() == 0 || outValue->length() == 0);
+}
 
 }

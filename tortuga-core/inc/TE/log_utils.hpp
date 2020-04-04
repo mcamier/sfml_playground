@@ -3,30 +3,41 @@
 
 #include <type_traits>
 #include <string>
+#include <ostream>
 
-namespace ta {
-namespace utils {
+namespace ta::utils {
+
+using std::ostream;
 
 // Log criticity level
-typedef enum LogLevelBitsFlag {
+typedef unsigned short LogLevelFlag_t;
+enum class LogLevelFlag : LogLevelFlag_t {
     DEBUG = 0x01,
     WARNING = 0x02,
     ERROR = 0x04,
     FATAL = 0x08
-} LogLevelBitsFlag;
-typedef uint8_t LogLevelFlag;
+};
+
+inline constexpr LogLevelFlag operator&(LogLevelFlag op1, LogLevelFlag op2) {
+    return static_cast<LogLevelFlag>(static_cast<LogLevelFlag_t>(op1) & static_cast<LogLevelFlag_t>(op2));
+}
 
 
 // Log channel
-typedef enum LogChannelBitsFlag {
+typedef unsigned short LogChannelFlag_t;
+enum class LogChannelFlag : LogChannelFlag_t {
     DEFAULT = 0x01,
     RENDER = 0x02,
     PHYSICS = 0x04,
     INPUT = 0x08,
     AI = 0x10,
     RESOURCE = 0x20
-} LogChannelBitsFlag;
-typedef uint8_t LogChannelFlag;
+};
+
+inline constexpr LogChannelFlag operator&(LogChannelFlag op1, LogChannelFlag op2) {
+    return static_cast<LogChannelFlag>(static_cast<LogChannelFlag_t>(op1) & static_cast<LogChannelFlag_t>(op2));
+}
+
 
 
 // Log criticity level name
@@ -78,6 +89,5 @@ struct logEntry_t {
 };
 
 } //namespace utils
-} //namespace ge
 
 #endif //TA_LOG_UTILS_H

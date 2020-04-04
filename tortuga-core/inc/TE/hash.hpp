@@ -1,6 +1,8 @@
 #ifndef TA_HASH_HPP
 #define TA_HASH_HPP
 
+#include <string>
+
 template <unsigned int N, unsigned int I>
 struct FnvHash {
   inline static unsigned int hash(const char (&str)[N]) {
@@ -17,7 +19,15 @@ struct FnvHash<N, 1> {
 
 template <unsigned int N>
 inline unsigned int makeHash(const char (&str)[N]) {
-  return FnvHash<N, N>::hash(str);
+    return FnvHash<N, N>::hash(str);
+}
+
+inline unsigned int makeHash(const std::string& str) {
+    unsigned int hash = 2166136261u;
+    for(int i = 0 ; i <= str.length(); i++) {
+        hash = (hash ^ str[i]) * 16777619u;
+    }
+    return hash;
 }
 
 #endif  // TA_HASH_HPP

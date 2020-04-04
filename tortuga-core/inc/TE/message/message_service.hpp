@@ -30,7 +30,7 @@ struct _sub {
 };
 
 
-struct MessageServiceConf_t {
+struct MessageServiceConf : public IServiceConfiguration {
 };
 
 /**
@@ -38,8 +38,8 @@ struct MessageServiceConf_t {
  * @note
  * @retval None
  */
-class MessageService : public ISingletonService<MessageService, MessageServiceConf_t> {
-    friend class ISingletonService<MessageService, MessageServiceConf_t>;
+class MessageService : public ISingletonService<MessageService, MessageServiceConf> {
+    friend class ISingletonService<MessageService, MessageServiceConf>;
 
     friend class Subscription;
 
@@ -92,7 +92,7 @@ public:
     void sendMessage(message msg);
 
 protected:
-    void vInit(MessageServiceConf_t initStructArg) override {};
+    void vInit(MessageServiceConf initStructArg) override {};
 
     void vDestroy() override {};
 

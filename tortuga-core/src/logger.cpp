@@ -5,7 +5,8 @@
 
 namespace ta::utils {
 
-void ConsoleLogger::vLog(LogLevelFlag lvl, const char *file, int line, std::string &message) {
+
+void ConsoleLogger::vLog(LogLevelFlag lvl, const char* file, int line, std::string& message) {
     if (lvl >= mLogLevel) {
         fprintf(stdout, "[%7s] %35s:%d\t%s\n",
                 LOG_LEVEL_NAMES[static_cast<int>(lvl)],
@@ -19,7 +20,7 @@ void ConsoleLogger::vFlush() {}
 
 
 void FileLogger::vInitialize(void) {
-    FILE *fp = getLogFile();
+    FILE* fp = getLogFile();
     if (fp != nullptr) {
         fprintf(fp, "FileLogger initialized");
         fclose(fp);
@@ -30,7 +31,7 @@ void FileLogger::vDestroy(void) {
     writePendingLogsIntoFileAndSwap();
 }
 
-void FileLogger::vLog(LogLevelFlag lvl, const char *file, int line, std::string &message) {
+void FileLogger::vLog(LogLevelFlag lvl, const char* file, int line, std::string& message) {
     if (lvl >= mLogLevel) {
         if (currentAmount < maxBulkEntry - 1) {
             appendLogEntry(lvl, file, line, message);
@@ -46,10 +47,10 @@ void FileLogger::vFlush() {
 }
 
 void FileLogger::writePendingLogsIntoFileAndSwap() {
-    FILE *fp = getLogFile();
+    FILE* fp = getLogFile();
     if (fp != nullptr) {
         // write all entries from previous vector in file
-        for (std::list<logEntry_t *>::iterator iter = currentEntries.begin();
+        for (std::list<logEntry_t*>::iterator iter = currentEntries.begin();
              iter != currentEntries.end(); ++iter) {
             int lvl = static_cast<int>((*iter)->lvl);
             fprintf(
@@ -76,8 +77,8 @@ void FileLogger::writePendingLogsIntoFileAndSwap() {
     currentAmount = 0;
 }
 
-void FileLogger::appendLogEntry(LogLevelFlag lvl, const char *file, int line, std::string &message) {
-    logEntry_t *entry = pDBSAllocator->alloc<logEntry_t>();
+void FileLogger::appendLogEntry(LogLevelFlag lvl, const char* file, int line, std::string& message) {
+    logEntry_t* entry = pDBSAllocator->alloc<logEntry_t>();
     entry->lvl = lvl;
     entry->line = line;
     strcpy(entry->file, file);
@@ -88,7 +89,7 @@ void FileLogger::appendLogEntry(LogLevelFlag lvl, const char *file, int line, st
 
 std::string FileLogger::getDateTimeNow() {
     time_t rawtime;
-    struct tm *timeinfo;
+    struct tm* timeinfo;
     char buffer[80];
 
     time(&rawtime);
@@ -99,8 +100,8 @@ std::string FileLogger::getDateTimeNow() {
     return dateAsString;
 }
 
-FILE *FileLogger::getLogFile() {
-    FILE *fp;
+FILE* FileLogger::getLogFile() {
+    FILE* fp;
     std::string dateAsString = this->getDateTimeNow();
     std::string folder(this->folder);
     if (folder.at(folder.size() - 1) != '/') {
@@ -116,8 +117,8 @@ FILE *FileLogger::getLogFile() {
 }
 
 
-void LoggerService::vInit(LoggerServiceInitializeArgs_t args) {
-    if (args.fileLogEnabled) {
+void LoggerService::vInit(LoggerServiceConf args) {
+    /*if (args.fileLogEnabled) {
         this->pFileLogger = new FileLogger(args.logLevel,
                                            args.logChannel,
                                            args.fileLogFolder,
@@ -126,7 +127,7 @@ void LoggerService::vInit(LoggerServiceInitializeArgs_t args) {
     if (args.consoleLogEnabled) {
         this->pConsoleLogger = new ConsoleLogger(args.logLevel,
                                                  args.logChannel);
-    }
+    }*/
 }
 
 void LoggerService::vUpdate() {}
@@ -140,12 +141,12 @@ void LoggerService::vDestroy() {
     }
 }
 
-void LoggerService::logInto(ILogger *logger,
+void LoggerService::logInto(ILogger* logger,
                             LogLevelFlag lvl,
                             LogChannelFlag logChannel,
-                            const char *file,
+                            const char* file,
                             int line,
-                            std::string &message) {
+                            std::string& message) {
     int index = 0;
     int indexLastSlash = -1;
     while (file[index] != '\0') {
@@ -169,9 +170,9 @@ void LoggerService::logInto(ILogger *logger,
 
 void LoggerService::log(LogLevelFlag lvl,
                         LogChannelFlag logChannel,
-                        const char *file,
+                        const char* file,
                         int line,
-                        std::string &message) {
+                        std::string& message) {
     if (this->pConsoleLogger != nullptr) {
         this->logInto(this->pConsoleLogger, lvl, logChannel, file, line, message);
     }

@@ -4,10 +4,16 @@
 #include <type_traits>
 #include <utility>
 #include <cstdint>
+#include <string>
+#include <map>
 
 #include "common.hpp"
+#include "hash.hpp"
 
 namespace ta::utils {
+
+using std::string;
+using std::map;
 
 // Enumerate the different status a manager could have
 enum ServiceState {
@@ -16,6 +22,35 @@ enum ServiceState {
     DESTROYED = 0x04
 };
 
+class IServiceConfiguration {
+protected:
+    map<unsigned int, string> properties;
+
+    template<typename T> T getCastedProperty(const std::string& value);
+
+public:
+    void setProperty(const string& property, const string& value) {
+        properties.insert(std::make_pair(makeHash(property), value));
+    };
+};
+
+
+//
+// Must be used inside a class extending the interface IServiceConfiguration
+//
+#define CONF_PROPERTY(TYPE, NAME) \
+protected: \
+    unsigned int hash##NAME = makeHash(#NAME); \
+    TYPE NAME; \
+public: \
+    string _##NAME() { \
+        auto prop = properties.find(this->hash##NAME); \
+        if (prop == properties.end()) return ""; \
+        return prop->second; \
+    } \
+    TYPE get_##NAME() { \
+        return getCastedProperty<TYPE>(this->_##NAME()); \
+    }
 
 template<typename T>
 class ISingleton {

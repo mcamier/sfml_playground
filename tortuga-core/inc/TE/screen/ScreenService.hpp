@@ -16,11 +16,11 @@ using std::list;
 using std::unique_ptr;
 using namespace utils;
 
-struct ScreenServiceConf_t {
+struct ScreenServiceConf : public IServiceConfiguration {
 };
 
-class ScreenService : public ISingletonService<ScreenService, ScreenServiceConf_t> {
-    friend ISingletonService<ScreenService, ScreenServiceConf_t>;
+class ScreenService : public ISingletonService<ScreenService, ScreenServiceConf> {
+    friend ISingletonService<ScreenService, ScreenServiceConf>;
 
 private:
     list<Screen*> screenList;
@@ -35,7 +35,7 @@ public:
     void render(RenderTexture &);
 
 protected:
-    void vInit(ScreenServiceConf_t initStructArg) override {};
+    void vInit(ScreenServiceConf initStructArg) override {};
 
     void vDestroy() override {};
 

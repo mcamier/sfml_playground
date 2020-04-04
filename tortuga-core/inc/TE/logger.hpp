@@ -17,16 +17,16 @@
 #endif
 
 
-namespace ta {
-namespace utils {
+namespace ta::utils {
 
-struct LoggerServiceInitializeArgs_t {
-    LogLevelFlag logLevel;
-    LogChannelFlag logChannel;
-    bool consoleLogEnabled;
-    bool fileLogEnabled;
-    const char *fileLogFolder;
-    const char *fileLogBaseName;
+
+class LoggerServiceConf : public IServiceConfiguration {
+    CONF_PROPERTY(LogLevelFlag, logLevel)
+    CONF_PROPERTY(LogChannelFlag, logChannel)
+    CONF_PROPERTY(bool, consoleLogEnabled)
+    CONF_PROPERTY(bool, fileLogEnabled)
+    CONF_PROPERTY(const char*, fileLogFolder)
+    CONF_PROPERTY(const char*, fileLogBaseName)
 };
 
 
@@ -180,8 +180,8 @@ private:
 //
 //
 class LoggerService :
-        public ISingletonService<LoggerService, LoggerServiceInitializeArgs_t> {
-    friend ISingletonService<LoggerService, LoggerServiceInitializeArgs_t>;
+        public ISingletonService<LoggerService, LoggerServiceConf> {
+    friend ISingletonService<LoggerService, LoggerServiceConf>;
 
 private:
     ConsoleLogger *pConsoleLogger = nullptr;
@@ -190,7 +190,7 @@ private:
 protected:
     LoggerService() = default;
 
-    void vInit(LoggerServiceInitializeArgs_t args) override;
+    void vInit(LoggerServiceConf args) override;
 
 
     void vDestroy() override;
@@ -239,25 +239,25 @@ private:
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ta::utils::LoggerService::get().log(ta::utils::LogLevelBitsFlag::DEBUG, CHANNELS, __FILE__, __LINE__, message);\
+        ta::utils::LoggerService::get().log(ta::utils::LogLevelFlag::DEBUG, CHANNELS, __FILE__, __LINE__, message);\
     }
 #define REP_WARNING(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ta::utils::LoggerService::get().log(ta::utils::LogLevelBitsFlag::WARNING, CHANNELS, __FILE__, __LINE__, message);\
+        ta::utils::LoggerService::get().log(ta::utils::LogLevelFlag::WARNING, CHANNELS, __FILE__, __LINE__, message);\
     }
 #define REP_ERROR(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ta::utils::LoggerService::get().log(ta::utils::LogLevelBitsFlag::ERROR, CHANNELS,__FILE__, __LINE__, message);\
+        ta::utils::LoggerService::get().log(ta::utils::LogLevelFlag::ERROR, CHANNELS,__FILE__, __LINE__, message);\
     }
 #define REP_FATAL(MESSAGE, CHANNELS) {\
         std::ostringstream internalLogStream;\
         internalLogStream << MESSAGE;\
         std::string message = internalLogStream.str(); \
-        ta::utils::LoggerService::get().log(ta::utils::LogLevelBitsFlag::FATAL, CHANNELS,__FILE__, __LINE__, message);\
+        ta::utils::LoggerService::get().log(ta::utils::LogLevelFlag::FATAL, CHANNELS,__FILE__, __LINE__, message);\
         throw std::runtime_error("Fatal error occured");\
     }
 #else
@@ -268,7 +268,7 @@ private:
 #define REP_FATAL(MESSAGE, CHANNELS)
 #endif
 
-}
+
 }
 
 #endif

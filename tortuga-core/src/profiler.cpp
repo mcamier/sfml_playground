@@ -52,12 +52,12 @@ void ProfilerService::registerSample(std::string &name, float durationMs) {
 
 
 void ProfilerService::vDestroy() {
-    REP_DEBUG("ProfilesManager details", LogChannelBitsFlag::DEFAULT)
+    REP_DEBUG("ProfilesManager details", LogChannelFlag::DEFAULT)
     for (auto &entry : globalSamplesMap) {
         REP_DEBUG("  " << entry.first << " [avg: " << entry.second.getAverageDurationMs() << "ms] [min: "
                        << entry.second.minDurationMs << "ms] [max: " << entry.second.maxDurationMs << "ms] ["
                        << entry.second.samplesAmount << " samples]",
-                  LogChannelBitsFlag::DEFAULT);
+                  LogChannelFlag::DEFAULT);
     }
 }
 

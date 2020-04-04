@@ -85,7 +85,7 @@ struct ProfilerGlobalEntry {
 
 // ProfilerServiceInitializeArgs_t gathers all properties that could be giving to the ProfilerManager during its
 // initialization in order to customize its behavior
-struct ProfilerServiceInitializeArgs_t {
+struct ProfilerServiceConf : public IServiceConfiguration {
 };
 
 
@@ -95,8 +95,8 @@ struct ProfilerServiceInitializeArgs_t {
 // Example:
 //      ProfilerManager::get().registerSample("Frame preparation", 256);
 class ProfilerService :
-        public ISingletonService<ProfilerService, ProfilerServiceInitializeArgs_t> {
-    friend ISingletonService<ProfilerService, ProfilerServiceInitializeArgs_t>;
+        public ISingletonService<ProfilerService, ProfilerServiceConf> {
+    friend ISingletonService<ProfilerService, ProfilerServiceConf>;
 
 private:
     // Samples registered since the beginning of the current frame
@@ -107,7 +107,7 @@ private:
 
     ProfilerService() = default;
 
-    void vInit(ProfilerServiceInitializeArgs_t args) override {}
+    void vInit(ProfilerServiceConf args) override {}
 
     void vDestroy() override;
 

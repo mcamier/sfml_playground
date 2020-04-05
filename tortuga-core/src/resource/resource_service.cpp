@@ -3,8 +3,6 @@
 #include "../../inc/TE/resource/resource_info.hpp"
 #include "../../inc/TE/core/core.hpp"
 #include "../../inc/TE/logger.hpp"
-#include "../../inc/TE/logger.hpp"
-#include "../../inc/TE/log_utils.hpp"
 
 #include <chrono>
 #include <cstdlib>
@@ -27,7 +25,11 @@ void ResourceService::vUpdate(const Time& time) {
 
         if (f.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
             REP_DEBUG("deferred loading of resource #" << (*it).first << " is done", LogChannelFlag::DEFAULT)
-            // TODO consider sending an Event
+            /*message msg;
+            msg.type = MSG_RESOURCE_LOADED;
+            msg.v0.type = variant::type_t::UINT_T;
+            msg.v0.uintValue = (*it).first;
+            MessageService::get().sendMessage(msg);*/
             inProgress.erase(it++);
         } else {
             it++;
@@ -35,75 +37,83 @@ void ResourceService::vUpdate(const Time& time) {
     }
 }
 
-void ResourceService::deferredLoad(const resource_info& info) {
-    // start a thread & load the resources in the thread
-    REP_DEBUG("deferred loading of resource #" << info.id, LogChannelFlag::DEFAULT)
-    promise<raw_resource_handler> pr;
-    auto fu = pr.get_future();
+void ResourceService::vDestroy() {
+    for (auto& entry : inProgress) {
+        auto& future = entry.second;
+        future.wait();
+    }
 
-    auto it = loaded_resources.find(info.id);
-    if (it == loaded_resources.end()) {
-        std::thread t(&ResourceService::asyncLoad, this, info, std::move(pr));
+    for (auto& entry : loaded_resources) {
+        const void* ptr = entry.second.ptr;
+        std::free(const_cast<void*>(ptr));
+    }
+}
+
+void ResourceService::deferredLoad(const resource_info& info) {
+    auto itLoaded = loaded_resources.find(info.id);
+    auto itInProgress = inProgress.find(info.id);
+
+    // only start deferred loading if the resource is neither loaded or currently loading asynchronously
+    if (itLoaded == loaded_resources.end() && itInProgress == inProgress.end()) {
+        // start a thread & load the resources in the thread
+        REP_DEBUG("deferred loading of resource #" << info.id, LogChannelFlag::DEFAULT)
+        promise<raw_resource_handler> pr;
+        auto fu = pr.get_future();
+        std::thread t(&ResourceService::loadResourceFromBundle, this, info, std::move(pr));
         inProgress.insert(std::make_pair(info.id, std::move(fu)));
         t.detach();
     } else {
-        // the resource is already loaded the promise value can me set directly
-        const void* ptr;
-        long size;
-        getResource(info, &ptr, &size);
-        raw_resource_handler hdl(ptr, size);
-        pr.set_value(hdl);
+        REP_DEBUG("request for deferred loading of resource #" << info.id << " ignored", LogChannelFlag::DEFAULT)
     }
 }
 
-void ResourceService::immediateLoad(const resource_info& info, const void** out_ptr, long* out_size) {
-    getResource(info, out_ptr, out_size);
-    if (*out_ptr == nullptr || *out_size == 0) {
-        std::cout << "immediate load of resource " << info.name << std::endl;
-        load(info, out_ptr, out_size);
+void ResourceService::immediateLoad(const resource_info& info) {
+    auto itLoaded = loaded_resources.find(info.id);
+    auto itInProgress = inProgress.find(info.id);
+    // resource not loaded already neither being loaded
+    if (itLoaded == loaded_resources.end() && itInProgress == inProgress.end()) {
+        promise<raw_resource_handler> pr;
+        auto fu = pr.get_future();
+        this->loadResourceFromBundle(info, std::move(pr));
+        fu.wait();
+        REP_DEBUG("immediate loading of resource #" << info.id << " is done", LogChannelFlag::DEFAULT)
+    } else {
+        // if resource is being loaded
+        if (itInProgress != inProgress.end()) {
+            // the resouce is currently being loaded, wait for it
+            auto& future = itInProgress->second;
+            REP_DEBUG("the resource #" << info.id << " was already loading, wait for it be loaded...", LogChannelFlag::DEFAULT)
+            future.wait();
+        } else {
+            REP_DEBUG("resource #" << info.id << " is already loaded", LogChannelFlag::DEFAULT)
+        }
     }
 }
 
-void ResourceService::getResource(const resource_info& info, const void** out_ptr, long* out_size) {
+void ResourceService::getResource(const resource_info& info, void** out_ptr, long* out_size) {
     auto it = loaded_resources.find(info.id);
-    if (it != loaded_resources.end()) {
-        raw_resource_handler& hdl = it->second;
-        *out_ptr = hdl.ptr;
-        *out_size = hdl.size;
-        return;
+    if (it == loaded_resources.end()) {
+        REP_FATAL("cannot get a resource which is not already loaded", LogChannelFlag::DEFAULT)
     }
 
-    *out_ptr = nullptr;
-    *out_size = 0;
+    raw_resource_handler& hdl = it->second;
+    *out_ptr = const_cast<void*>(hdl.ptr);
+    *out_size = hdl.size;
 }
 
-void ResourceService::load(const resource_info& info, const void** out_ptr, long* out_size) {
-    char* ptr = (char*) std::malloc(sizeof(char) * info.size);
+void ResourceService::loadResourceFromBundle(const resource_info& info, promise<raw_resource_handler> promise) {
+    char* ptr = (char*) std::malloc(info.size);
+
+    // little delay for debugging/ testing purpose
+    /*std::chrono::duration<int, std::milli> some_wait(2000);
+    this_thread::sleep_for(some_wait);*/
 
     string filepath = GetWorkingDir() + string("bundle.bin");
-    std::ifstream bundle_file(filepath.c_str(), std::ios::binary | std::ios::in);
+    std::ifstream bundle_file(filepath.c_str(), std::ifstream::binary);
     if (!bundle_file) {
         REP_FATAL("fail to open the resource bundle file", LogChannelFlag::DEFAULT)
     }
-    bundle_file.seekg(info.head, ios_base::beg);
-    bundle_file.read(ptr, info.size);
-    bundle_file.close();
-
-    loaded_resources.insert(std::make_pair(info.id, raw_resource_handler(ptr, info.size)));
-
-    *out_ptr = ptr;
-    *out_size = info.size;
-}
-
-void ResourceService::asyncLoad(const resource_info& info, promise<raw_resource_handler> promise) {
-    char* ptr = (char*) std::malloc(sizeof(char) * info.size);
-
-    string filepath = GetWorkingDir() + string("bundle.bin");
-    std::ifstream bundle_file(filepath.c_str(), std::ios::binary | std::ios::in);
-    if (!bundle_file) {
-        REP_FATAL("fail to open the resource bundle file", LogChannelFlag::DEFAULT)
-    }
-    bundle_file.seekg(info.head, ios_base::beg);
+    bundle_file.seekg(info.head-1, ios::beg);
     bundle_file.read(ptr, info.size);
     bundle_file.close();
 
@@ -113,17 +123,6 @@ void ResourceService::asyncLoad(const resource_info& info, promise<raw_resource_
 
     // set value in the map of loaded resources
     loaded_resources.insert(std::make_pair(info.id, hdl));
-}
-
-void ResourceService::vDestroy() {
-    for (auto& entry : loaded_resources) {
-        const void* ptr = entry.second.ptr;
-        std::free(const_cast<void*>(ptr));
-    }
-
-    for (auto& entry : inProgress) {
-        // TODO
-    }
 }
 
 }

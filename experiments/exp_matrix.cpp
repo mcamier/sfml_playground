@@ -99,13 +99,6 @@ int main(int argc, char* argv[]) {
     cout << "mean point: ";
     print_vector(meanPt);
 
-    //-----------
-
-    ResourceService res_service;
-    const char* bytes = nullptr;
-    long size = 0;
-    res_service.immediateLoad(ResourceManifest::BOOM, &bytes, &size);
-
     //--------------
     string str = "1234";
     string str2 = "  1234";

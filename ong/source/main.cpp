@@ -12,10 +12,11 @@ using ta::GameApp;
 class PongGame : public GameApp {
 public:
     void vInitialize() override {
-        ResourceService::get().deferredLoad(ResourceManifest::FONT);
+        ResourceService::get().immediateLoad(ResourceManifest::FONT);
         ResourceService::get().deferredLoad(ResourceManifest::BOOM);
         ResourceService::get().deferredLoad(ResourceManifest::HIT);
 
+        REP_DEBUG("add menu screen", LogChannelFlag::DEFAULT)
         Screen* menuScreen = new MenuScreen();
         ScreenService::get().addScreen(menuScreen);
     }

@@ -42,7 +42,7 @@ public:
      * @param  out_ptr: ref to the load resource
      * @param  out_size: size of the resource in memory
      */
-    void immediateLoad(const resource_info& info, const void** out_ptr, long* out_size);
+    void immediateLoad(const resource_info& info);
 
     /**
      * @brief Get the location and size of a loaded resource
@@ -54,31 +54,13 @@ public:
      * @param  out_ptr: ref to the load resource
      * @param  out_size: size of the resource in memory
      */
-    void getResource(const resource_info& info, const void** out_ptr, long* out_size);
+    void getResource(const resource_info& info, void** out_ptr, long* out_size);
 
 private:
     /**
-     * @brief
-     * @note
-     * @param  info:
-     * @retval
-     */
-    bool isLoaded(const resource_info& info);
-
-    /**
-     * @brief
-     * @note
-     * @param  &info:
-     * @param  **out_ptr:
-     * @param  *out_size:
-     * @retval None
-     */
-    void load(const resource_info& info, const void** out_ptr, long* out_size);
-
-    /**
      * @brief Aimed to be called in a separate thread for non-blocking resource loading
      */
-    void asyncLoad(const resource_info& info, promise<raw_resource_handler> promise);
+    void loadResourceFromBundle(const resource_info& info, promise<raw_resource_handler> promise);
 
 protected:
     void vInit(ResourceServiceConf initStructArg) override {}

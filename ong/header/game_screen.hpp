@@ -45,7 +45,7 @@ public:
     GameLogic() {
         balls[0] = Ball(0, 20);
         // todo
-        const void* bytes;
+        void* bytes;
         long size;
         ResourceService::get().getResource(ResourceManifest::FONT, &bytes, &size);
         ResourceService::get().getResource(ResourceManifest::BOOM, &bytes, &size);
@@ -194,7 +194,7 @@ public:
     }
 
     void onPlayerCollidesBall(message msg) {
-        cout << "player collides with ball" << endl;
+        REP_DEBUG("player collides with ball", LogChannelFlag::DEFAULT)
     }
 
     void onBallLost(message msg) {
@@ -210,7 +210,9 @@ public:
         }
     }
 
-    void onPlayerWin(message msg) { cout << "player win" << endl; }
+    void onPlayerWin(message msg) {
+        REP_DEBUG("player win", LogChannelFlag::DEFAULT)
+    }
 };
 
 class GameRenderer : public IRenderable {

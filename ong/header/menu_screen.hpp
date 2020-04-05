@@ -13,11 +13,14 @@ using namespace ta;
 class MenuScreen : public UIScreen {
 private:
     sf::Font font;
+    void* fontPtr;
+    long fontSize;
 
 public:
     MenuScreen() {
-        if (!font.loadFromFile("font.ttf")) {
-            cout << "fail to load the font file" << endl;
+        ResourceService::get().getResource(ResourceManifest::FONT, &fontPtr, &fontSize);
+        if (!font.loadFromMemory(fontPtr, fontSize)) {
+            REP_FATAL("fail to load font from memory", LogChannelFlag::DEFAULT)
         }
 
         UIElement* title = UILabel::buildElement("ONG!", font, Origin::CENTER, 180, 0.5f, 0.3f);

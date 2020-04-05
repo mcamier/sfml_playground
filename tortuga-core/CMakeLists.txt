@@ -40,7 +40,6 @@ set(TORTUGA_CORE_SOURCE
         src/resource/resource_service.cpp
         src/message/message_service.cpp
         src/message/subscription.cpp
-        src/message/message.cpp
         src/screen/Screen.cpp
         src/screen/ScreenService.cpp
         src/screen/ui/UIScreen.cpp

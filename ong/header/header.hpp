@@ -18,10 +18,10 @@ const int default_ball_radius = 4;
 const int ball_count_max = 3;
 
 // events
-messageType_t MSG_BALL_LOST = makeHash("MSG_BALL_LOST");
-messageType_t MSG_PLAYER_WIN = makeHash("MSG_PLAYER_WIN");
-messageType_t MSG_POWER_UP_PICKED_UP = makeHash("MSG_POWER_UP_PICKED_UP");
-messageType_t MSG_PLAYER_COLLIDE_BALL = makeHash("MSG_PLAYER_COLLIDE_BALL");
+const messageType_t MSG_BALL_LOST = makeHash("MSG_BALL_LOST");
+const messageType_t MSG_PLAYER_WIN = makeHash("MSG_PLAYER_WIN");
+const messageType_t MSG_POWER_UP_PICKED_UP = makeHash("MSG_POWER_UP_PICKED_UP");
+const messageType_t MSG_PLAYER_COLLIDE_BALL = makeHash("MSG_PLAYER_COLLIDE_BALL");
 
 enum players {
     p1, p2

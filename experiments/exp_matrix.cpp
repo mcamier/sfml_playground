@@ -1,11 +1,11 @@
 #include <iostream>
 #include "TE/math/math.hpp"
 #include "TE/math/plane.hpp"
-#include "TE/math/vec2.hpp"
 #include "TE/math/vec3.hpp"
 
 #include "TE/resource/resource_info.hpp"
 #include "TE/resource/resource_service.hpp"
+#include "TE/ecs/ecs.hpp"
 
 using namespace std;
 using namespace ta;
@@ -20,13 +20,6 @@ public:
     static const resource_info _ALL[];
 };
 
-const resource_info ResourceManifest::FONT = resource_info("FONT", "ttf", 0, 82480);
-const resource_info ResourceManifest::BOOM = resource_info("BOOM", "wav", 82689, 371398);
-const resource_info ResourceManifest::HIT = resource_info("HIT", "wav", 454145, 117670);
-const int ResourceManifest::_COUNT = 3;
-
-const resource_info ResourceManifest::_ALL[3] = {ResourceManifest::FONT, ResourceManifest::BOOM, ResourceManifest::HIT};
-
 void print_vector(const vec2f& v) { cout << v.x << ", " << v.y << endl; }
 
 void print_vector(const vec3f& v) {
@@ -40,8 +33,6 @@ bool testPointInsideTriangle(const vec3f& a, const vec3f& b, const vec3f& c,
 }
 
 int main(int argc, char* argv[]) {
-    cout << "HelloWorld" << endl;
-
     vec2f v1(2, 5);
     vec2f v2(9, 4);
 
@@ -100,17 +91,8 @@ int main(int argc, char* argv[]) {
     print_vector(meanPt);
 
     //--------------
-    string str = "1234";
-    string str2 = "  1234";
-    cout << str.length() << endl;
-    cout << str[str.length()-1] << endl;
-    cout << "pop back" << endl;
-    str.pop_back();
-    cout << str[str.length()-1] << endl;
-    cout << str << endl;
-    str.erase(str.begin());
-    cout << str << endl;
 
-    cout << (str[0] == ' ') << endl;
-    cout << (str2[0] == ' ') << endl;
+
+
+
 }

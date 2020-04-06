@@ -5,6 +5,7 @@
 #include "services/service.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 namespace ta {
 
@@ -54,23 +55,21 @@ public:
 protected:
     void vInit(WindowServiceConf conf) override {
         width = conf.get_width();
-        height = conf.get_width();
+        height = conf.get_height();
         framerateLimit = conf.get_frameratelimit();
         vsync = conf.get_vsync();
         fullscreen = conf.get_fullscreen();
 
-        window = new sf::RenderWindow(sf::VideoMode(800, 800), "ttest");
-        window->setFramerateLimit(60);
-        window->setVerticalSyncEnabled(true);
+        window = new sf::RenderWindow(sf::VideoMode(width, height), conf.get_title().c_str(), (fullscreen) ? sf::Style::Fullscreen : sf::Style::Default);
+        window->setFramerateLimit(framerateLimit);
+        window->setVerticalSyncEnabled(vsync);
 
-        renderTarget.create(800, 800);
+        renderTarget.create(width, height);
     }
 
     void vDestroy() override {
         window->close();
     }
-
-
 
 };
 

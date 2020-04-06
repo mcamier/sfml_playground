@@ -10,12 +10,12 @@ namespace ta::utils {
 using std::ostream;
 
 // Log criticity level
-typedef unsigned short LogLevelFlag_t;
+typedef unsigned int LogLevelFlag_t;
 enum class LogLevelFlag : LogLevelFlag_t {
-    DEBUG = 0x01,
-    WARNING = 0x02,
-    ERROR = 0x04,
-    FATAL = 0x08
+    DEBUG   = 0b0001,
+    WARNING = 0b0010,
+    ERROR   = 0b0100,
+    FATAL   = 0b1000
 };
 
 inline constexpr LogLevelFlag operator&(LogLevelFlag op1, LogLevelFlag op2) {
@@ -24,14 +24,14 @@ inline constexpr LogLevelFlag operator&(LogLevelFlag op1, LogLevelFlag op2) {
 
 
 // Log channel
-typedef unsigned short LogChannelFlag_t;
+typedef unsigned int LogChannelFlag_t;
 enum class LogChannelFlag : LogChannelFlag_t {
-    DEFAULT = 0x01,
-    RENDER = 0x02,
-    PHYSICS = 0x04,
-    INPUT = 0x08,
-    AI = 0x10,
-    RESOURCE = 0x20
+    DEFAULT     = 0b000001,
+    RENDER      = 0b000010,
+    PHYSICS     = 0b000100,
+    INPUT       = 0b001000,
+    AI          = 0b010000,
+    RESOURCE    = 0b100000
 };
 
 inline constexpr LogChannelFlag operator&(LogChannelFlag op1, LogChannelFlag op2) {

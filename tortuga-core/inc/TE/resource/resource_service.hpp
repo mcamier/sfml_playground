@@ -47,8 +47,7 @@ public:
     /**
      * @brief Get the location and size of a loaded resource
      * @note Always load a resource before using this function.
-     * Trying to get a resource not already loaded could lead to undefined
-     * behavior
+     * Trying to get a resource not already loaded will rise a fatal error
      * @param  info: Resource to load, should be listed as static field in
      * the ResourceManifest type
      * @param  out_ptr: ref to the load resource

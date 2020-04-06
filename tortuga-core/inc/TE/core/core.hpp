@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #ifdef RUNNING_WINDOWS
 #define WIN32_LEAN_AND_MEAN

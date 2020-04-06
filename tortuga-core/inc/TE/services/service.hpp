@@ -31,13 +31,12 @@ enum ServiceState {
 #define CONF_PROPERTY(TYPE, NAME) \
 protected: \
     unsigned int hash##NAME = makeHash(#NAME); \
-    TYPE NAME; \
-public: \
     string _##NAME() { \
         auto prop = properties.find(this->hash##NAME); \
         if (prop == properties.end()) return ""; \
         return prop->second; \
     } \
+public: \
     TYPE get_##NAME() { \
         return getCastedProperty<TYPE>(this->_##NAME()); \
     }

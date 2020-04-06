@@ -123,19 +123,18 @@ void GameApp::readConfIni(LoggerServiceConf* loggerServiceConf,
             string key, value;
 
             if (extract(line, &key, &value)) {
-                // todo append parameter to conf
                 if (std::equal(loggerName.begin(), loggerName.end(), lastGroupName.begin())) {
-                    loggerServiceConf->setProperty(key, value);
+                    loggerServiceConf->setProperty(key, std::move(value));
                 } else if (std::equal(windowName.begin(), windowName.end(), lastGroupName.begin())) {
-                    windowServiceConf->setProperty(key, value);
+                    windowServiceConf->setProperty(key, std::move(value));
                 } else if (std::equal(profilerName.begin(), profilerName.end(), lastGroupName.begin())) {
-                    profilerServiceConf->setProperty(key, value);
+                    profilerServiceConf->setProperty(key, std::move(value));
                 } else if (std::equal(messageName.begin(), messageName.end(), lastGroupName.begin())) {
-                    messageServiceConf->setProperty(key, value);
+                    messageServiceConf->setProperty(key, std::move(value));
                 } else if (std::equal(screenName.begin(), screenName.end(), lastGroupName.begin())) {
-                    screenServiceConf->setProperty(key, value);
+                    screenServiceConf->setProperty(key, std::move(value));
                 } else if (std::equal(resourceName.begin(), resourceName.end(), lastGroupName.begin())) {
-                    resourceServiceConf->setProperty(key, value);
+                    resourceServiceConf->setProperty(key, std::move(value));
                 }
             }
         }

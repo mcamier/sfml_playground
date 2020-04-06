@@ -320,6 +320,8 @@ private:
 
     // screen private draw target
     sf::RenderTexture renderTexture;
+    EntityManager* entityManager;
+    SystemManager* systemManager;
 
 public:
     GameScreen() {
@@ -327,27 +329,35 @@ public:
         this->renderer = new GameRenderer(*logic);
         this->transitionDurationSec = 1.0f;
 
-        COngPlayer* ongPlayer = new COngPlayer();
+        this->systemManager = new SystemManager();
+        this->systemManager->addSystem(new RenderingSystem());
+        this->systemManager->addSystem(new CollisionSystem());
+        this->systemManager->addSystem(new KineticSystem());
+        this->entityManager = new EntityManager(this->systemManager);
+
+        COngPlayer* pplayer = new COngPlayer(players::p1);
         CPosition* pposition = new CPosition();
         CRenderer* prendered = new CRenderer();
         CHitbox* phitbox = new CHitbox();
 
-        COngBall* ball = new COngBall();
+        COngBall* bball = new COngBall();
         CPosition* bposition = new CPosition();
         CKinetic* bkinetic = new CKinetic();
         CHitbox* bhitbox = new CHitbox();
         CRenderer* brendered = new CRenderer();
 
-        RenderSystem* renderSystem = new RenderSystem();
+        EntityId id = entityManager->addEntity();
+        entityManager->addComponent(id, pplayer);
+        entityManager->addComponent(id, pposition);
+        entityManager->addComponent(id, prendered);
+        entityManager->addComponent(id, phitbox);
 
-    }
-
-    void createPlayer() {
-
-    }
-
-    void createBall() {
-
+        id = entityManager->addEntity();
+        entityManager->addComponent(id, bball);
+        entityManager->addComponent(id, bposition);
+        entityManager->addComponent(id, bkinetic);
+        entityManager->addComponent(id, bhitbox);
+        entityManager->addComponent(id, brendered);
     }
 
     /**
@@ -356,6 +366,7 @@ public:
      */
     void update(const sf::Time& time) override {
         this->logic->update(time);
+        systemManager->update(time);
     }
 
     /**

@@ -17,7 +17,7 @@ protected:
     template<typename T> T getCastedProperty(const std::string& value);
 
 public:
-    void setProperty(const string& property, const string& value) {
+    void setProperty(const string& property, const string value) {
         properties.insert(std::make_pair(makeHash(property), value));
     };
 };

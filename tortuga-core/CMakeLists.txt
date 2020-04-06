@@ -30,9 +30,12 @@ set(TORTUGA_CORE_HEADER
         inc/TE/WindowService.hpp
         inc/TE/services/configuration.hpp
         inc/TE/ecs/entity.hpp
+        inc/TE/ecs/base.hpp
         inc/TE/ecs/ecs.hpp
         inc/TE/ecs/component.hpp
-        inc/TE/Collider.hpp inc/TE/ecs/system.hpp)
+        inc/TE/Collider.hpp
+        inc/TE/ecs/systemManager.hpp
+        inc/TE/ecs/system.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
@@ -46,7 +49,13 @@ set(TORTUGA_CORE_SOURCE
         src/GameApp.cpp
         src/memory.cpp
         src/profiler.cpp
-        src/logger.cpp)
+        src/logger.cpp
+        src/core/core.cpp
+        src/ecs/system.cpp
+        src/ecs/systemManager.cpp
+        src/ecs/component.cpp
+        src/ecs/base.cpp
+        src/ecs/entity.cpp)
 
 add_library(tortuga-core 
         ${TORTUGA_CORE_HEADER} 

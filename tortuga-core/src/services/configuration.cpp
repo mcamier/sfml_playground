@@ -1,36 +1,35 @@
 #include "../../inc/TE/services/configuration.hpp"
 #include "../../inc/TE/log_utils.hpp"
 
+#include <stdlib.h>
+
 namespace ta::utils {
+
 
 template<>
 bool IServiceConfiguration::getCastedProperty(const std::string& value) {
-    // todo
-    return true;
+    if(value.length()>1) return false;
+    return (value[0] == '1');
 }
 
 template<>
 int IServiceConfiguration::getCastedProperty(const std::string& value) {
-    // todo
-    return 1;
+    return strtol(value.c_str(), nullptr, 10);
 }
 
 template<>
 float IServiceConfiguration::getCastedProperty(const std::string& value) {
-    // todo
-    return 1.f;
+    return strtof(value.c_str(), nullptr);
 }
 
 template<>
 double IServiceConfiguration::getCastedProperty(const std::string& value) {
-    // todo
-    return 1.f;
+    return strtod(value.c_str(), nullptr);
 }
 
 template<>
 char IServiceConfiguration::getCastedProperty(const std::string& value) {
-    // todo
-    return 'a';
+    return value.c_str()[0];
 }
 
 template<>
@@ -40,12 +39,16 @@ std::string IServiceConfiguration::getCastedProperty(const std::string& value) {
 
 template<>
 LogLevelFlag IServiceConfiguration::getCastedProperty(const std::string& value) {
-    return LogLevelFlag::DEBUG;
+    int v = strtol(value.c_str(), nullptr, 10);
+    LogLevelFlag f = static_cast<LogLevelFlag>(v);
+    return f;
 }
 
 template<>
 LogChannelFlag IServiceConfiguration::getCastedProperty(const std::string& value) {
-    return LogChannelFlag::DEFAULT;
+    int v = strtol(value.c_str(), nullptr, 10);
+    LogChannelFlag f = static_cast<LogChannelFlag>(v);
+    return f;
 }
 
 }

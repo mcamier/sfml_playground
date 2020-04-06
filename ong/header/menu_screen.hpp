@@ -13,11 +13,11 @@ using namespace ta;
 class MenuScreen : public UIScreen {
 private:
     sf::Font font;
-    void* fontPtr;
-    long fontSize;
 
 public:
     MenuScreen() {
+        void* fontPtr;
+        long fontSize;
         ResourceService::get().getResource(ResourceManifest::FONT, &fontPtr, &fontSize);
         if (!font.loadFromMemory(fontPtr, fontSize)) {
             REP_FATAL("fail to load font from memory", LogChannelFlag::DEFAULT)

@@ -117,15 +117,16 @@ FILE* FileLogger::getLogFile() {
 
 
 void LoggerService::vInit(LoggerServiceConf args) {
+    LogLevelFlag logLevelFlag = args.get_logLevel();
+    LogChannelFlag logChannelFlag = args.get_logChannel();
     if(args.get_fileLogEnabled()) {
-        this->pFileLogger = new FileLogger(args.get_logLevel(),
-                                           args.get_logChannel(),
+        this->pFileLogger = new FileLogger(logLevelFlag,
+                                           logChannelFlag,
                                            args.get_fileLogFolder().c_str(),
                                            args.get_fileLogBaseName().c_str());
     }
     if(args.get_consoleLogEnabled()) {
-        this->pConsoleLogger = new ConsoleLogger(args.get_logLevel(),
-                                                 args.get_logChannel());
+        this->pConsoleLogger = new ConsoleLogger(logLevelFlag, logChannelFlag);
     }
 }
 

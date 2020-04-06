@@ -1,6 +1,7 @@
 
 #include "gtest/gtest.h"
 #include "../inc/TE/hash.hpp"
+#include "../inc/TE/core/core.hpp"
 
 #include <string>
 
@@ -20,6 +21,16 @@ void trim(string& str) {
         str.erase(str.begin());
     }
 }
+
+TEST(BitMask, Eq) {
+    ta::BitMask b1 = ta::BitMask::getNext();
+    ta::BitMask b2 = b1;
+
+    ta::BitMask b3 = b1 & b2;
+
+    EXPECT_TRUE((b3 & 0) == 0);
+}
+
 TEST(StringTrim, LeftTrim) {
     string input = "  putain";
     string expectedResult = "putain";

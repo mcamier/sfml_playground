@@ -8,29 +8,45 @@
 
 using namespace ta;
 
-//
-//
-class CollisionSystem : public AbstractSystem<CPosition, COngBall> {
+class OngPlayerSystem : public AbstractSystem<CPosition, COngPlayer> {
 private:
-    const string name = "CollisionSystem";
+    const string name = "OngPlayerSystem";
+
+public:
+    OngPlayerSystem() {}
+
+    void update(const Time& time, EntityId entityId) override;
+
+    void handleEvent(const sf::Time& time, EntityId target, ECSMessage msg) override;
+
+    const string& getName() override;
+};
+
+//
+//
+class OngCollisionSystem : public AbstractSystem<CPosition, COngBall> {
+private:
+    const string name = "OngCollisionSystem";
     const EntityId playerOneId;
     const EntityId playerTwoId;
     COngPlayer* p1;
     COngPlayer* p2;
 
 public:
-    CollisionSystem(EntityId playerOneId, EntityId playerTwoId) : playerOneId(playerOneId), playerTwoId(playerTwoId) {}
+    OngCollisionSystem(EntityId playerOneId, EntityId playerTwoId) : playerOneId(playerOneId), playerTwoId(playerTwoId) {}
 
     void preUpdate(const Time& time) override;
 
     void update(const Time& time, EntityId entityId) override;
 
+    void handleEvent(const sf::Time& time, EntityId target, ECSMessage msg) override;
+
     const string& getName() override;
 
 private:
-    bool ballCollideWithPaddle(CPosition* ballPos, COngPlayer* player);
+    static bool ballCollideWithPaddle(CPosition* ballPos, COngPlayer* player);
 
-    bool collideWithArc(CPosition* ballPos, COngPlayer* player);
+    static bool collideWithArc(CPosition* ballPos, COngPlayer* player);
 };
 
 
@@ -43,9 +59,9 @@ private:
 public:
     void update(const Time& time, EntityId entityId) override;
 
+    void handleEvent(const sf::Time& time, EntityId target, ECSMessage msg) override;
+
     const string& getName() override;
 };
-
-
 
 #endif //TORTUGA_SYSTEM_HPP

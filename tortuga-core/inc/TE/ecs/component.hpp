@@ -2,6 +2,7 @@
 #define TORTUGA_COMPONENT_HPP
 
 #include <stdexcept>
+#include <functional>
 
 #include "../../TE/math/vec2.hpp"
 #include "../../TE/core/origin.hpp"
@@ -38,7 +39,9 @@ public:
 COMPONENT_DEF(CRenderer)
 public:
     Origin origin = Origin::CENTER;
-    IRenderable* renderable;
+    std::function<void(const CPosition&, sf::RenderTexture&)> drawCallback;
+
+    CRenderer(std::function<void(const CPosition&, sf::RenderTexture&)> drawCallback) : drawCallback(drawCallback) {}
 };
 
 

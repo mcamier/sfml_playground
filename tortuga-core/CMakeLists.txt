@@ -36,7 +36,6 @@ set(TORTUGA_CORE_HEADER
         inc/TE/Collider.hpp
         inc/TE/ecs/systemManager.hpp
         inc/TE/ecs/system.hpp
-        inc/TE/ecs/EventManager.hpp
         inc/TE/ecs/observer.hpp)
 
 set(TORTUGA_CORE_SOURCE
@@ -59,7 +58,7 @@ set(TORTUGA_CORE_SOURCE
         src/ecs/base.cpp
         src/ecs/observer.cpp
         src/ecs/entity.cpp
-        src/ecs/EventManager.cpp)
+        src/ecs/system.cpp)
 
 add_library(tortuga-core 
         ${TORTUGA_CORE_HEADER} 

@@ -88,8 +88,7 @@ struct message {
 
 struct ECSMessage {
     messageType type = 0;
-    EntityId sender;
-    EntityId receiver;
+    ECSMessage(messageType msgType) : type(msgType) {}
 
     VAR_SETTER_DEF(1)
     VAR_SETTER_DEF(2)

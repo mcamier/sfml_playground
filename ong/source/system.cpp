@@ -4,34 +4,33 @@
 
 //
 //
-void CollisionSystem::preUpdate(const Time& time) {
+void OngCollisionSystem::preUpdate(const Time& time) {
     this->p1 = getComponent<COngPlayer>(this->playerOneId);
     this->p2 = getComponent<COngPlayer>(this->playerTwoId);
 }
 
-void CollisionSystem::update(const Time& time, EntityId entityId) {
+void OngCollisionSystem::update(const Time& time, EntityId entityId) {
     auto* bp = getComponent<CPosition>(entityId);
     auto* bc = getComponent<COngBall>(entityId);
 
     if (bc->last_hit_by == players::p1 && ballCollideWithPaddle(bp, p2)) {
-        // collision
-        // compute collision response here ?
-        /*vec2f norm = angleToVec(player.angle);
-        vec2f incidence = ball.vector;
-        float x = vec2f::dot(norm, incidence);
-
-        vec2f reflect = incidence - (2 * (incidence - (x * norm)));
-        collision_response = -reflect;*/
+        ECSMessage collisionMsg(MSG_BALL_HIT);
+        sendMessage(entityId, collisionMsg);
     } else if (bc->last_hit_by == players::p2 && ballCollideWithPaddle(bp, p1)) {
-        // collision
+        ECSMessage collisionMsg(MSG_BALL_HIT);
+        sendMessage(entityId, collisionMsg);
     }
 }
 
-const string& CollisionSystem::getName() {
+void OngCollisionSystem::handleEvent(const sf::Time& time, EntityId target, ECSMessage msg) {
+
+}
+
+const string& OngCollisionSystem::getName() {
     return name;
 }
 
-bool CollisionSystem::collideWithArc(CPosition* ballPos, COngPlayer* player) {
+bool OngCollisionSystem::collideWithArc(CPosition* ballPos, COngPlayer* player) {
     ballPos->position.normalize();
     int ball_degrees = vectorToDegrees(ballPos->position);
     int player_degrees = player->angle;
@@ -53,12 +52,11 @@ bool CollisionSystem::collideWithArc(CPosition* ballPos, COngPlayer* player) {
     }
 }
 
-bool CollisionSystem::ballCollideWithPaddle(CPosition* ballPos, COngPlayer* player) {
+bool OngCollisionSystem::ballCollideWithPaddle(CPosition* ballPos, COngPlayer* player) {
     if (isOutsideCircle(ballPos->position.x, ballPos->position.y, arena_radius - default_ball_radius) &&
         isInsideCircle(ballPos->position.x, ballPos->position.y, arena_radius)) {
 
         return collideWithArc(ballPos, player);
-
     }
     return false;
 }
@@ -76,6 +74,38 @@ void KineticSystem::update(const Time& time, EntityId entityId) {
     }
 }
 
+void KineticSystem::handleEvent(const sf::Time& time, EntityId target, ECSMessage msg) {
+
+}
+
 const string& KineticSystem::getName() {
+    return name;
+}
+
+
+//
+//
+void OngPlayerSystem::update(const Time& time, EntityId entityId) {
+
+}
+
+void OngPlayerSystem::handleEvent(const sf::Time& time, EntityId target, ECSMessage msg) {
+    if(msg.type == MSG_PLAYER_MOVE_LEFT) {
+        auto* player = getComponent<COngPlayer>(target);
+        player->angle -= time.asSeconds() * default_player_speed;
+        player->clampAngle();
+        auto* pos = getComponent<CPosition>(target);
+        pos->position = getPointOnArc(player->angle, arena_radius);
+    }
+    else if(msg.type == MSG_PLAYER_MOVE_RIGHT) {
+        auto* player = getComponent<COngPlayer>(target);
+        player->angle += time.asSeconds() * default_player_speed;
+        player->clampAngle();
+        auto* pos = getComponent<CPosition>(target);
+        pos->position = getPointOnArc(player->angle, arena_radius);
+    }
+}
+
+const string& OngPlayerSystem::getName() {
     return name;
 }

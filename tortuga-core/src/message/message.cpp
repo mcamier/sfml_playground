@@ -1,5 +1,3 @@
-
-
 #include "../../inc/TE/message/message.hpp"
 
 namespace ta {

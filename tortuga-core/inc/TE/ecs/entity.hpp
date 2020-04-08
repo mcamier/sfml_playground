@@ -45,7 +45,7 @@ public:
             }
         }
 
-        throw std::runtime_error("no component reference found to return");
+        throw std::runtime_error("no component reference found to return ");
     }
 
     // TODO maybe consider doing a soft delete of the component until the end of the frame

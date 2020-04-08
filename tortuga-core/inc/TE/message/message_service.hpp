@@ -64,7 +64,7 @@ public:
      * @note A subscription should not outlive the callback existence !!
      * @param  obj:
      */
-    Subscription subscribe(messageType_t msgType, std::function<void(message)> callback);
+    Subscription subscribe(messageType msgType, std::function<void(message)> callback);
 
     /**
      * @brief
@@ -72,7 +72,7 @@ public:
      * @retval
      */
     template<typename T>
-    Subscription subscribe(messageType_t msgType, void (T::*method)(message), T* instance) {
+    Subscription subscribe(messageType msgType, void (T::*method)(message), T* instance) {
         return this->subscribe(msgType, [instance, method](message msg) { (instance->*method)(msg); });
     }
 

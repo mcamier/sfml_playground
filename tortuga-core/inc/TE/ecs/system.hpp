@@ -1,5 +1,5 @@
-#ifndef TORTUGA_SYSTEM_HPP
-#define TORTUGA_SYSTEM_HPP
+#ifndef TORTUGA_ECS_SYSTEM_HPP
+#define TORTUGA_ECS_SYSTEM_HPP
 
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <set>
@@ -8,6 +8,8 @@
 #include "../ecs/base.hpp"
 #include "../logger.hpp"
 #include "component.hpp"
+#include "observer.hpp"
+#include "systemManager.hpp"
 
 namespace ta {
 
@@ -15,6 +17,8 @@ using namespace utils;
 
 using std::set;
 using std::string;
+
+
 
 
 template<typename T, typename... C>
@@ -35,13 +39,22 @@ struct SystemComponentFlag<T> {
 
 //
 //
-class ISystem : public IUpdatable {
+class ISystem : public IUpdatable, public Observer {
+    friend class SystemManager;
+
+protected:
+    SystemManager* manager;
+
 public:
     virtual void registerIfCompatible(EntityId id, ComponentBitMask flag) = 0;
 
     virtual const string& getName() = 0;
-};
 
+    template<typename T>
+    T* getComponent(EntityId entityId) {
+        return manager->entityManager->getComponent<T>(entityId);
+    }
+};
 
 //
 //
@@ -52,6 +65,20 @@ private:
     set<EntityId> entitiesManaged;
 
 public:
+    virtual void preUpdate(const sf::Time& time) {};
+
+    virtual void update(const sf::Time& time, EntityId entityId) = 0;
+
+    virtual void postUpdate(const sf::Time& time) {};
+
+    void update(const sf::Time& time) override {
+        this->preUpdate(time);
+        for(auto& entityId : entitiesManaged) {
+            this->update(time, entityId);
+        }
+        this->postUpdate(time);
+    }
+
     void registerIfCompatible(EntityId id, ComponentBitMask flag) override {
         int maskAsInt = systemComponenflag.getValue();
 
@@ -70,46 +97,6 @@ public:
     }
 };
 
-
-//
-//
-class RenderingSystem : public AbstractSystem<CPosition, CRenderer> {
-private:
-    const string name = "RenderingSystem";
-
-public:
-    void update(const Time&) override;
-
-    const string& getName() override;
-};
-
-
-//
-//
-class CollisionSystem : public AbstractSystem<CPosition, CHitbox> {
-private:
-    const string name = "CollisionSystem";
-
-public:
-    void update(const Time&) override;
-
-    const string& getName() override;
-};
-
-
-//
-//
-class KineticSystem : public AbstractSystem<CPosition, CKinetic> {
-private:
-    const string name = "KineticSystem";
-
-public:
-    void update(const Time&) override;
-
-    const string& getName() override;
-};
-
-
 }
 
-#endif //TORTUGA_SYSTEM_HPP
+#endif //TORTUGA_ECS_SYSTEM_HPP

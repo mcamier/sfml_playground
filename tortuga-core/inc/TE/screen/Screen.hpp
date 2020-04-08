@@ -35,7 +35,6 @@ private:
      */
     bool _isRenderable;
 
-protected:
     /* Blocker Screen doesnt allow Screen below to be updated
      */
     bool isBlocker;

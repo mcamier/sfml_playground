@@ -8,13 +8,13 @@
 #include "systemManager.hpp"
 #include "base.hpp"
 
-
 namespace ta {
 
 using std::map;
 using std::list;
 
 class EntityManager {
+    friend class SystemManager;
 
 private:
     SystemManager* systemManager;
@@ -22,12 +22,34 @@ private:
     map<EntityId, list<IComponent*>> entityComponents;
 
 public:
-    EntityManager(SystemManager* systemManager) : systemManager(systemManager) {}
+    EntityManager(SystemManager* systemManager) : systemManager(systemManager) {
+        systemManager->entityManager = this;
+    }
 
     EntityId addEntity();
+
     void removeEntity(EntityId id);
+
     void addComponent(EntityId id, IComponent* component);
 
+    template<typename COMP>
+    COMP* getComponent(EntityId entityId) {
+        auto it = entityComponents.find(entityId);
+        if(it != entityComponents.end()) {
+            auto& components = (*it).second;
+            for (auto itComp = components.begin(); itComp != components.end(); itComp++) {
+                if ((*itComp)->getType() == COMP::bitmask) {
+                    IComponent* comp = (*itComp);
+                    return static_cast<COMP*>(comp);
+                }
+            }
+        }
+
+        throw std::runtime_error("no component reference found to return");
+    }
+
+    // TODO maybe consider doing a soft delete of the component until the end of the frame
+    // (update loop), then hard delete before the next frame update
     template<typename COMP>
     void removeComponent(EntityId id) {
         auto it = entityComponents.find(id);

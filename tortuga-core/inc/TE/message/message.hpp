@@ -1,9 +1,12 @@
 #ifndef TA_MSG_HPP
 #define TA_MSG_HPP
 
+#include "../ecs/entity.hpp"
+#include <stdexcept>
+
 namespace ta {
 
-typedef unsigned int messageType_t;
+using messageType = unsigned int ;
 
 struct variant {
   enum class type_t { INT_T, UINT_T, FLOAT_T, DOUBLE_T, BOOL_T };
@@ -19,19 +22,82 @@ struct variant {
   };
 };
 
+#define VAR_SETTER_IMPL(STRUCTNAME, IDX) \
+template<> void STRUCTNAME::setVar##IDX(int value) {\
+    this->v##IDX.type = variant::type_t::INT_T;\
+    this->v##IDX.intValue = value;\
+}\
+template<> int STRUCTNAME::getVar##IDX<int>() {\
+    if(this->v##IDX.type != variant::type_t::INT_T) \
+        throw std::runtime_error("Fatal error occured when getting #STRUCTNAME var from incompatible type"); \
+    return this->v##IDX.intValue;\
+}\
+template<> void STRUCTNAME::setVar##IDX(bool value) {\
+    this->v##IDX.type = variant::type_t::BOOL_T;\
+    this->v##IDX.intValue = value;\
+}\
+template<> bool STRUCTNAME::getVar##IDX<bool>() {\
+    if(this->v##IDX.type != variant::type_t::BOOL_T) \
+        throw std::runtime_error("Fatal error occured when getting #STRUCTNAME var from incompatible type"); \
+    return this->v##IDX.intValue;\
+}\
+template<> void STRUCTNAME::setVar##IDX(float value) {\
+    this->v##IDX.type = variant::type_t::FLOAT_T;\
+    this->v##IDX.intValue = value;\
+}\
+template<> float STRUCTNAME::getVar##IDX<float>() {\
+    if(this->v##IDX.type != variant::type_t::FLOAT_T) \
+        throw std::runtime_error("Fatal error occured when getting #STRUCTNAME var from incompatible type"); \
+    return this->v##IDX.intValue;\
+}\
+template<> void STRUCTNAME::setVar##IDX(double value) {\
+    this->v##IDX.type = variant::type_t::DOUBLE_T;\
+    this->v##IDX.intValue = value;\
+}\
+template<> double STRUCTNAME::getVar##IDX<double>() {\
+    if(this->v##IDX.type != variant::type_t::DOUBLE_T) \
+        throw std::runtime_error("Fatal error occured when getting #STRUCTNAME var from incompatible type"); \
+    return this->v##IDX.intValue;\
+}\
+template<> void STRUCTNAME::setVar##IDX(unsigned int value) {\
+    this->v##IDX.type = variant::type_t::UINT_T;\
+    this->v##IDX.intValue = value;\
+}\
+template<> unsigned int STRUCTNAME::getVar##IDX<unsigned int>() {\
+    if(this->v##IDX.type != variant::type_t::UINT_T) \
+        throw std::runtime_error("Fatal error occured when getting #STRUCTNAME var from incompatible type"); \
+    return this->v##IDX.intValue;\
+}
+
+
+#define VAR_SETTER_DEF(IDX) \
+variant v##IDX; \
+template<typename T> void setVar##IDX(T value); \
+template<typename T> T getVar##IDX();
+
 struct message {
-  messageType_t type = 0;
-  variant v0;
-  variant v1;
-  variant v2;
-  variant v3;
-  variant v4;
-  variant v5;
-  variant v6;
-  variant v7;
-  variant v8;
-  variant v9;
+    messageType type = 0;
+
+    VAR_SETTER_DEF(1)
+    VAR_SETTER_DEF(2)
+    VAR_SETTER_DEF(3)
+    VAR_SETTER_DEF(4)
+    VAR_SETTER_DEF(5)
+
 };
+
+struct ECSMessage {
+    messageType type = 0;
+    EntityId sender;
+    EntityId receiver;
+
+    VAR_SETTER_DEF(1)
+    VAR_SETTER_DEF(2)
+    VAR_SETTER_DEF(3)
+    VAR_SETTER_DEF(4)
+    VAR_SETTER_DEF(5)
+};
+
 
 }  // namespace ta
 

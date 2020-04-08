@@ -8,7 +8,7 @@
 #include <map>
 #include <SFML/System/Time.hpp>
 
-#include "../common.hpp"
+#include "../core/core.hpp"
 #include "../hash.hpp"
 #include "configuration.hpp"
 

@@ -8,7 +8,6 @@
 #include "../ecs/base.hpp"
 #include "../logger.hpp"
 #include "component.hpp"
-#include "system.hpp"
 
 namespace ta {
 
@@ -17,14 +16,20 @@ using namespace utils;
 using std::list;
 using std::string;
 
+
+class ISystem;
+class EntityManager;
+
 //
 //
 class SystemManager : public IUpdatable {
     friend class EntityManager;
-
-    list<ISystem*> systems;
+    friend class ISystem;
 
 private:
+    EntityManager* entityManager;
+    list<ISystem*> systems;
+
     void notifyEntityUpdate(EntityId id, ComponentBitMask componentBitMask);
 
 public:
@@ -32,8 +37,10 @@ public:
 
     void update(const Time&) override;
 
+    void handleEvent();
+
 };
 
 }
 
-#endif //TORTUGA_SYSTEM_HPP
+#endif

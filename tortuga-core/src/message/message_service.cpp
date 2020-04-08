@@ -7,7 +7,7 @@
 
 namespace ta {
 
-Subscription MessageService::subscribe(messageType_t msgType,
+Subscription MessageService::subscribe(messageType msgType,
                                        std::function<void(message)> callback) {
     Subscription sub(this);
     _sub internal_sub = _sub(sub.id, callback);

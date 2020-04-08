@@ -11,7 +11,7 @@
 
 namespace ta {
 
-const messageType_t EXIT_GAME_REQUESTED = 0x0;
+const messageType EXIT_GAME_REQUESTED = 0x0;
 
 class GameApp {
 private:

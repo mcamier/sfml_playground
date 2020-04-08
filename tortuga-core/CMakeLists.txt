@@ -35,12 +35,15 @@ set(TORTUGA_CORE_HEADER
         inc/TE/ecs/component.hpp
         inc/TE/Collider.hpp
         inc/TE/ecs/systemManager.hpp
-        inc/TE/ecs/system.hpp)
+        inc/TE/ecs/system.hpp
+        inc/TE/ecs/EventManager.hpp
+        inc/TE/ecs/observer.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
         src/services/configuration.cpp
         src/resource/resource_service.cpp
+        src/message/message.cpp
         src/message/message_service.cpp
         src/message/subscription.cpp
         src/screen/Screen.cpp
@@ -51,11 +54,12 @@ set(TORTUGA_CORE_SOURCE
         src/profiler.cpp
         src/logger.cpp
         src/core/core.cpp
-        src/ecs/system.cpp
         src/ecs/systemManager.cpp
         src/ecs/component.cpp
         src/ecs/base.cpp
-        src/ecs/entity.cpp)
+        src/ecs/observer.cpp
+        src/ecs/entity.cpp
+        src/ecs/EventManager.cpp)
 
 add_library(tortuga-core 
         ${TORTUGA_CORE_HEADER} 

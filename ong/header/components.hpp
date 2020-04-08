@@ -5,9 +5,7 @@
 #include <TE/ecs/component.hpp>
 
 
-
 COMPONENT_DEF(COngBall)
-
 public:
     int radius = default_ball_radius;
     // By default, player one have to hit the ball first
@@ -18,7 +16,6 @@ public:
 };
 
 COMPONENT_DEF(COngPlayer)
-
 public:
     players player_id;
     int score;

@@ -17,26 +17,25 @@ public:
 
 };
 
-
-
-
 COMPONENT_DEF(CPosition)
-
 public:
     vec2f position = vec2f(0, 0);
+
+    CPosition(float x, float y) : position(vec2f(x, y)) {}
 
 };
 
 COMPONENT_DEF(CKinetic)
-
 public:
-    vec2f movement = vec2f(-1, 0);
+    vec2f direction = vec2f(-1, 0);
+    float speed = 1;
+
+    CKinetic(float directionx, float directiony, float speed) : speed(speed), direction(vec2f(directionx, directiony)) {}
 
 };
 
 
 COMPONENT_DEF(CRenderer)
-
 public:
     Origin origin = Origin::CENTER;
     IRenderable* renderable;
@@ -44,13 +43,11 @@ public:
 
 
 COMPONENT_DEF(CHitbox)
-
 public:
     Origin origin = Origin::CENTER;
     ICollider* collider;
 
 };
-
 
 }
 

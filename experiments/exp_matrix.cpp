@@ -3,6 +3,7 @@
 #include "TE/math/plane.hpp"
 #include "TE/math/vec3.hpp"
 
+#include "TE/message/message.hpp"
 #include "TE/resource/resource_info.hpp"
 #include "TE/resource/resource_service.hpp"
 #include "TE/ecs/ecs.hpp"

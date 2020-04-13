@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include "../hash.hpp"
+#include "../core/stringId.hpp"
 
 namespace ta::utils {
 
@@ -18,7 +19,7 @@ protected:
 
 public:
     void setProperty(const string& property, const string value) {
-        properties.insert(std::make_pair(makeHash(property), value));
+        properties.insert(std::make_pair(ta::gInternString(property.c_str()), value));
     };
 };
 

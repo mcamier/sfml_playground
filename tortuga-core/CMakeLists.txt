@@ -36,7 +36,8 @@ set(TORTUGA_CORE_HEADER
         inc/TE/Collider.hpp
         inc/TE/ecs/systemManager.hpp
         inc/TE/ecs/system.hpp
-        inc/TE/ecs/observer.hpp)
+        inc/TE/ecs/observer.hpp
+        inc/TE/core/stringId.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
@@ -53,6 +54,7 @@ set(TORTUGA_CORE_SOURCE
         src/profiler.cpp
         src/logger.cpp
         src/core/core.cpp
+        src/core/stringId.cpp
         src/ecs/systemManager.cpp
         src/ecs/component.cpp
         src/ecs/base.cpp

@@ -1,6 +1,7 @@
 #ifndef FOOBAR_HEADER_ONG_HPP
 #define FOOBAR_HEADER_ONG_HPP
 
+#include "TE/core/stringId.hpp"
 #include "TE/hash.hpp"
 #include "TE/message/message.hpp"
 
@@ -18,14 +19,9 @@ const int default_ball_radius = 4;
 const int ball_count_max = 3;
 
 // events
-const messageType MSG_BALL_HIT = makeHash("MSG_BALL_HIT");
-const messageType MSG_PLAYER_MOVE_LEFT = makeHash("MSG_PLAYER_MOVE_LEFT");
-const messageType MSG_PLAYER_MOVE_RIGHT = makeHash("MSG_PLAYER_MOVE_RIGHT");
-
-const messageType MSG_BALL_LOST = makeHash("MSG_BALL_LOST");
-const messageType MSG_PLAYER_WIN = makeHash("MSG_PLAYER_WIN");
-const messageType MSG_POWER_UP_PICKED_UP = makeHash("MSG_POWER_UP_PICKED_UP");
-const messageType MSG_PLAYER_COLLIDE_BALL = makeHash("MSG_PLAYER_COLLIDE_BALL");
+const messageType MSG_BALL_HIT = gInternString("MSG_BALL_HIT");
+const messageType MSG_PLAYER_MOVE_LEFT = gInternString("MSG_PLAYER_MOVE_LEFT");
+const messageType MSG_PLAYER_MOVE_RIGHT = gInternString("MSG_PLAYER_MOVE_RIGHT");
 
 enum players {
     p1, p2

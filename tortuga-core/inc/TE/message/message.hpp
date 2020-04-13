@@ -2,11 +2,12 @@
 #define TA_MSG_HPP
 
 #include "../ecs/entity.hpp"
+#include "../core/stringId.hpp"
 #include <stdexcept>
 
 namespace ta {
 
-using messageType = unsigned int ;
+using messageType = stringId ;
 
 struct variant {
   enum class type_t { INT_T, UINT_T, FLOAT_T, DOUBLE_T, BOOL_T };

@@ -2,7 +2,7 @@
 
 #include "../../inc/TE/ecs/entity.hpp"
 #include "../../inc/TE/ecs/system.hpp"
-#include "../../inc/TE/message/message.hpp"
+#include "../../inc/TE/core/stringId.hpp"
 
 namespace ta {
 
@@ -59,7 +59,7 @@ void SystemManager::handleEvent(const sf::Time& time) {
 }
 
 void SystemManager::sendMessage(EntityId receiver, const ECSMessage message) {
-    REP_DEBUG("Message " << message.type << " send for entity #" << receiver, LogChannelFlag::DEFAULT)
+    REP_DEBUG("Message " << gStringFromStringId(message.type) << " send for entity #" << receiver, LogChannelFlag::DEFAULT)
     auto result = this->pendingMessages.find(receiver);
     if(result != this->pendingMessages.end()) {
         auto& messages = (*result).second;

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(tortuga
+project(tortugax
         VERSION 0.1
         LANGUAGES C CXX)
 
@@ -22,9 +22,7 @@ add_definitions(-DLOGGING_ENABLED=1)
 
 add_subdirectory(libs/googletest)
 
-add_subdirectory(tortuga-core)
-add_subdirectory(experiments)
-add_subdirectory(resource_bundler)
+add_subdirectory(tortuga)
 
 add_subdirectory(pong)
 add_subdirectory(ong)

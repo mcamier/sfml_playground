@@ -1,8 +1,14 @@
-#include "../../inc/TE/screen/Screen.hpp"
+#include "../include/tortuga/Screen.hpp"
 
-#include "../../inc/TE/input/InputService.hpp"
+//#include "../../include/tortuga/input/InputService.hpp"
+
+/*
+#include <SFML/System/Time.hpp>
+*/
 
 namespace ta {
+
+/*using namespace sf;*/
 
 Screen::Screen() {
     this->isEntering = true;
@@ -26,7 +32,7 @@ void Screen::close() {
     this->isExiting = true;
 }
 
-void Screen::_update(const Time& time) {
+/*void Screen::_update(const Time& time) {
     if(isEntering) {
         this->onEntering(getTransition());
     }
@@ -35,7 +41,7 @@ void Screen::_update(const Time& time) {
     }
     this->handleInput();
     this->update(time);
-}
+}*/
 
 void Screen::setInputCallback(stringId inputName, std::function<void()> callback) {
 

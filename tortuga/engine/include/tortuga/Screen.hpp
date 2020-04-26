@@ -1,12 +1,11 @@
 #ifndef FOOBAR_SCREEN_HPP
 #define FOOBAR_SCREEN_HPP
 
-#include "../core/IEventHandler.hpp"
-#include "../core/IUpdatable.hpp"
-#include "../core/IRenderable.hpp"
-#include "../core/stringId.hpp"
+#include <tortuga/stringId.hpp>
 
 namespace ta {
+
+using namespace core;
 
 // Forward declaration;
 class ScreenService;
@@ -15,7 +14,7 @@ class ScreenService;
  * Abstract class for any Screen displaying in the game like a pause menu, the menu Screen, the loading Screen or the
  * gameplay.
  */
-class Screen : public IEventHandler, public IUpdatable, public IRenderable {
+class Screen /*: public IEventHandler, public IUpdatable, public IRenderable*/ {
     // Allow the ScreenService to access private fields or methods of a Screen object
     friend class ScreenService;
 
@@ -61,7 +60,7 @@ public:
 
     void close();
 
-    void _update(const Time& time);
+    //void _update(const Time& time);
 
     virtual void onEntering(const float transitionInterpolation) {}
 

@@ -13,10 +13,12 @@
 
 #include "TE/math/math.hpp"
 #include "TE/message/message.hpp"
+#include "TE/input/InputService.hpp"
 #include "TE/message/message_service.hpp"
 #include "TE/message/subscription.hpp"
 #include "TE/resource/resource_service.hpp"
 #include "TE/screen/Screen.hpp"
+#include "TE/physics/physics.hpp"
 #include "header.hpp"
 #include "components.hpp"
 #include "system.hpp"
@@ -31,33 +33,61 @@ using namespace ta;
 class GameScreen : public Screen {
 private:
     // screen private draw target
+    sf::Font font;
     sf::RenderTexture renderTexture;
 
     EntityManager* entityManager;
     SystemManager* systemManager;
-
-    EntityId playerOneId;
-    EntityId playerTwoId;
-    EntityId ballId;
-
-    EntityId controlledPlayer = playerOneId;
+    EntityId id;
+    EntityId id3;
+    EntityId id2;
+    vec3f anchorPosition = vec3f(0,0,0);
 
 public:
     GameScreen() {
-        if (!renderTexture.create(200, 200)) { /* TODO check error */ }
+        std::function<void(const CPosition&, sf::RenderTexture&)> drawCallback = [](const CPosition& p, sf::RenderTexture& renderTex) {
+            sf::CircleShape shape(default_ball_radius);
+            shape.setPosition(p.position.x + game_width / 2, -p.position.y + game_height / 2);
+            shape.setFillColor(sf::Color::Blue);
+            renderTex.draw(shape);
+        };
+
+        std::function<void(const CPosition&, sf::RenderTexture&)> drawCallback2 = [](const CPosition& p, sf::RenderTexture& renderTex) {
+            sf::CircleShape shape(default_ball_radius);
+            shape.setPosition(p.position.x + game_width / 2, -p.position.y + game_height / 2);
+            shape.setFillColor(sf::Color::Yellow);
+            renderTex.draw(shape);
+        };
+
+        if (!renderTexture.create(800, 800)) { /* TODO check error */ }
 
         this->systemManager = new SystemManager();
         this->entityManager = new EntityManager(this->systemManager);
+        BasicPhysicSystem* physicSystem = new BasicPhysicSystem();
+        this->systemManager->addSystem(physicSystem);
 
-        playerOneId = createPlayer(players::p1);
-        controlledPlayer = playerOneId;
-        playerTwoId = createPlayer(players::p2);
-        ballId = createBall();
+        id = entityManager->addEntity();
+        entityManager->addComponent(id, new CPosition(50, -90));
+        entityManager->addComponent(id, new CParticule(5));
+        entityManager->addComponent(id, new CRenderer(drawCallback));
+        physicSystem->addGenerator(id, new AnchoredSpringForceGenerator(anchorPosition, 15.f, 200.f));
+        physicSystem->addGenerator(id, new GravityForceGenerator(vec3f(0.0f, -100.0f, 0.0f)));
 
-        this->systemManager->addSystem(new OngPlayerSystem());
-        this->systemManager->addSystem(new OngCollisionSystem(playerOneId, playerTwoId));
-        this->systemManager->addSystem(new KineticSystem());
+        id2 = entityManager->addEntity();
+        entityManager->addComponent(id2, new CPosition(100, -90));
+        entityManager->addComponent(id2, new CParticule(5));
+        entityManager->addComponent(id2, new CRenderer(drawCallback2));
+        physicSystem->addGenerator(id2, new GravityForceGenerator(vec3f(0.0f, -100.0f, 0.0f)));
 
+        EntityId anchorId = entityManager->addEntity();;
+        entityManager->addComponent(anchorId, new CPosition(anchorPosition.x, anchorPosition.y));
+        entityManager->addComponent(anchorId, new CRenderer(drawCallback2));
+
+        //InputService::get().mapCallback(MSG_PLAYER_MOVE_LEFT, [this]() { moveActivePlayerLeft(); });
+        //InputService::get().mapCallback(MSG_PLAYER_MOVE_RIGHT, [this]() { moveActivePlayerRight(); });
+        //InputService::get().mapCallback(MSG_CHANGE_ACTIVE_PLAYER, [this]() { changeActivePlayer(); });
+
+        setInputCallback(MSG_PLAYER_MOVE_LEFT);
     }
 
     void update(const sf::Time& time) override {
@@ -65,27 +95,6 @@ public:
     }
 
     bool handleEvent(const sf::Event& event) override {
-        if (event.type == sf::Event::KeyPressed) {
-            if(event.key.code == sf::Keyboard::Key::Left) {
-                ECSMessage msg = ECSMessage(MSG_PLAYER_MOVE_LEFT);
-                this->systemManager->sendMessage(controlledPlayer, msg);
-            }
-            else if(event.key.code == sf::Keyboard::Key::Right) {
-                ECSMessage msg = ECSMessage(MSG_PLAYER_MOVE_RIGHT);
-                this->systemManager->sendMessage(controlledPlayer, msg);
-            }
-            else if(event.key.code == sf::Keyboard::Key::LShift) {
-                controlledPlayer = (controlledPlayer == playerOneId) ? playerTwoId : playerOneId;
-            }
-            else if (event.key.code == sf::Keyboard::Key::Space) {
-                /*if (!logic->isRoundActive()) {
-                    logic->setRoundActive(true);;
-                    logic->resetBall();
-                } else {
-                    logic->resetBall();
-                }*/
-            }
-        }
         return false;
     }
 
@@ -100,64 +109,41 @@ public:
 
         renderTexture.display();
 
+        auto* pos = entityManager->getComponent<CPosition>(id);
+        auto* physic = entityManager->getComponent<CParticule>(id);
+
+        REP_DEBUG("position \t" << pos->position.x << " ; " << pos->position.y, LogChannelFlag::ON_SCREEN)
+        REP_DEBUG("velocity \t" << physic->velocity.x << " ; " << physic->velocity.y, LogChannelFlag::ON_SCREEN)
+        REP_DEBUG("acceleration " << physic->acceleration.x << " ; " << physic->acceleration.y, LogChannelFlag::ON_SCREEN)
+
+        // draw lines
+        int linesAmount = 50;
+        sf::VertexArray lines(sf::Lines, 2 * linesAmount);
+        for(int i = 0; i < linesAmount ; i++) {
+            lines[2*i].position = sf::Vector2f(-4000, 50 * i);
+            lines[2*i].color = sf::Color(75, 75, 75, 255);
+            lines[2*i+1].position = sf::Vector2f(4000, 50 * i);
+            lines[2*i+1].color = sf::Color(75, 75, 75, 255);
+        }
+        renderTexture.draw(lines);
+
+
         sf::Sprite sprite(renderTexture.getTexture());
-
-        sf::Transform transform;
-        transform.scale(4, 4);
-        target.draw(sprite, sf::RenderStates(transform));
+        target.draw(sprite);
     }
 
-private:
-    EntityId createPlayer(players playerId) {
-        EntityId id = entityManager->addEntity();
+    void moveActivePlayerLeft() {
 
-        COngPlayer* pplayer = new COngPlayer(playerId);
-        CPosition* pposition = new CPosition();
-        CRenderer* prendered = new CRenderer([](const CPosition& p, sf::RenderTexture& renderTex) {
-            sf::CircleShape c(3);
-            c.setFillColor(sf::Color::Red);
-            c.setPosition(p.position.x + game_width / 2, p.position.y + game_height / 2);
-            renderTex.draw(c);
-            /*p = getPointOnArc(player.angle - player.paddle_half_arc, arena_radius);
-            c.setPosition(p.position.x + game_width / 2, p.position.y + game_height / 2);
-            renderTex.draw(c);
-
-            p = getPointOnArc(player.angle + player.paddle_half_arc, arena_radius);
-            c.setPosition(p.position.x + game_width / 2, p.position.y + game_height / 2);
-            renderTex.draw(c);*/
-        });
-        CHitbox* phitbox = new CHitbox();
-
-        entityManager->addComponent(id, pplayer);
-        entityManager->addComponent(id, pposition);
-        entityManager->addComponent(id, prendered);
-        entityManager->addComponent(id, phitbox);
-
-        return id;
     }
 
-    EntityId createBall() {
-        EntityId id = entityManager->addEntity();
+    void moveActivePlayerRight() {
 
-        COngBall* bball = new COngBall();
-        CPosition* bposition = new CPosition(0, 20);
-        CKinetic* bkinetic = new CKinetic(-1, 0, default_ball_speed);
-        CHitbox* bhitbox = new CHitbox();
-        CRenderer* brendered = new CRenderer([](const CPosition& p, sf::RenderTexture& renderTex) {
-            sf::CircleShape shape(default_ball_radius);
-            shape.setPosition(p.position.x + game_width / 2, p.position.y + game_height / 2);
-            shape.setFillColor(sf::Color::Red);
-            renderTex.draw(shape);
-        });
-
-        entityManager->addComponent(id, bball);
-        entityManager->addComponent(id, bposition);
-        entityManager->addComponent(id, bkinetic);
-        entityManager->addComponent(id, bhitbox);
-        entityManager->addComponent(id, brendered);
-
-        return id;
     }
+
+    void changeActivePlayer() {
+
+    }
+
 };
 
 #endif

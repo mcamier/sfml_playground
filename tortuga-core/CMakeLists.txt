@@ -26,18 +26,20 @@ set(TORTUGA_CORE_HEADER
         inc/TE/memory.hpp
         inc/TE/logger.hpp
         inc/TE/profiler.hpp
-        inc/TE/InputService.hpp
+        inc/TE/input/InputService.hpp
         inc/TE/WindowService.hpp
         inc/TE/services/configuration.hpp
         inc/TE/ecs/entity.hpp
         inc/TE/ecs/base.hpp
         inc/TE/ecs/ecs.hpp
         inc/TE/ecs/component.hpp
-        inc/TE/Collider.hpp
         inc/TE/ecs/systemManager.hpp
         inc/TE/ecs/system.hpp
         inc/TE/ecs/observer.hpp
-        inc/TE/core/stringId.hpp)
+        inc/TE/core/stringId.hpp
+        inc/TE/physics/particule.hpp
+        inc/TE/physics/physics.hpp
+        inc/TE/physics/force.hpp inc/TE/input/inputs.hpp)
 
 set(TORTUGA_CORE_SOURCE
         src/math/math.cpp
@@ -60,7 +62,10 @@ set(TORTUGA_CORE_SOURCE
         src/ecs/base.cpp
         src/ecs/observer.cpp
         src/ecs/entity.cpp
-        src/ecs/system.cpp)
+        src/ecs/system.cpp
+        src/physics/particule.cpp
+        src/physics/force.cpp
+        src/input/InputService.cpp)
 
 add_library(tortuga-core 
         ${TORTUGA_CORE_HEADER} 

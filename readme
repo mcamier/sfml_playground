@@ -1,0 +1,7 @@
+todo
+
+[X] add on-screen logger (use LoggerService and ILogger)
+[ ] handle input properly
+[ ] 2d camera transformation
+[ ] collision detection -> contact generation
+[ ] collision resolution

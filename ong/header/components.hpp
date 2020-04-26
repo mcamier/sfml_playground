@@ -3,6 +3,7 @@
 
 #include "header.hpp"
 #include <TE/ecs/component.hpp>
+#include <TE/math/math.hpp>
 
 
 COMPONENT_DEF(COngBall)

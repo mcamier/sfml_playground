@@ -1,0 +1,4 @@
+core                requires no modules
+modules/ecs         requires core
+modules/collision   requires core & modules/ecs
+modules/physic      requires core & modules/ecs

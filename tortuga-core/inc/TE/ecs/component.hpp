@@ -4,9 +4,9 @@
 #include <stdexcept>
 #include <functional>
 
+#include "../../TE/math/vec3.hpp"
 #include "../../TE/math/vec2.hpp"
 #include "../../TE/core/origin.hpp"
-#include "../../TE/Collider.hpp"
 #include "../../TE/core/IRenderable.hpp"
 #include "../../TE/ecs/base.hpp"
 
@@ -15,15 +15,13 @@ namespace ta {
 class IComponent {
 public:
     virtual ComponentBitMask getType() = 0;
-
 };
 
 COMPONENT_DEF(CPosition)
 public:
-    vec2f position = vec2f(0, 0);
+    vec3f position = vec3f(0, 0, 0);
 
-    CPosition(float x, float y) : position(vec2f(x, y)) {}
-
+    CPosition(float x, float y) : position(vec3f(x, y, 0)) {}
 };
 
 COMPONENT_DEF(CKinetic)
@@ -32,7 +30,6 @@ public:
     float speed = 1;
 
     CKinetic(float directionx, float directiony, float speed) : speed(speed), direction(vec2f(directionx, directiony)) {}
-
 };
 
 
@@ -48,7 +45,6 @@ public:
 COMPONENT_DEF(CHitbox)
 public:
     Origin origin = Origin::CENTER;
-    ICollider* collider;
 
 };
 

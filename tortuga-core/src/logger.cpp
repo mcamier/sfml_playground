@@ -19,6 +19,19 @@ void ConsoleLogger::vLog(LogLevelFlag lvl, const char* file, int line, std::stri
 void ConsoleLogger::vFlush() {}
 
 
+void OnScreenLogger::vLog(LogLevelFlag lvl, const char* file, int line, std::string& message) {
+    this->lines.push_back(message);
+}
+
+void OnScreenLogger::vFlush() {
+    this->lines.clear();
+}
+
+std::list<string> OnScreenLogger::getLogs() {
+    return this->lines;
+}
+
+
 void FileLogger::vInitialize(void) {
     FILE* fp = getLogFile();
     if (fp != nullptr) {
@@ -119,15 +132,17 @@ FILE* FileLogger::getLogFile() {
 void LoggerService::vInit(LoggerServiceConf args) {
     LogLevelFlag logLevelFlag = args.get_logLevel();
     LogChannelFlag logChannelFlag = args.get_logChannel();
-    if(args.get_fileLogEnabled()) {
+    if (args.get_fileLogEnabled()) {
         this->pFileLogger = new FileLogger(logLevelFlag,
                                            logChannelFlag,
                                            args.get_fileLogFolder().c_str(),
                                            args.get_fileLogBaseName().c_str());
     }
-    if(args.get_consoleLogEnabled()) {
+    if (args.get_consoleLogEnabled()) {
         this->pConsoleLogger = new ConsoleLogger(logLevelFlag, logChannelFlag);
     }
+
+    this->pOnScreenLogger = new OnScreenLogger();
 }
 
 void LoggerService::vUpdate(const sf::Time& time) {}
@@ -147,6 +162,7 @@ void LoggerService::logInto(ILogger* logger,
                             const char* file,
                             int line,
                             std::string& message) {
+
     int index = 0;
     int indexLastSlash = -1;
     while (file[index] != '\0') {
@@ -173,6 +189,12 @@ void LoggerService::log(LogLevelFlag lvl,
                         const char* file,
                         int line,
                         std::string& message) {
+
+    if(logChannel == LogChannelFlag::ON_SCREEN) {
+        this->pOnScreenLogger->vLog(lvl, "", 0, message);
+        return;
+    };
+
     if (this->pConsoleLogger != nullptr) {
         this->logInto(this->pConsoleLogger, lvl, logChannel, file, line, message);
     }
@@ -189,6 +211,28 @@ void LoggerService::flush() {
     if (this->pFileLogger != nullptr) {
         this->pFileLogger->vFlush();
     }
+}
+
+void LoggerService::render(sf::RenderTexture& target) {
+    sf::Font font;
+    if (!font.loadFromFile("cour.ttf")) {
+        REP_FATAL("fail to load font from memory", LogChannelFlag::DEFAULT)
+    }
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(11);
+    text.setFillColor(sf::Color::White);
+
+    if(pOnScreenLogger != nullptr) {
+        int count = 0;
+        for(auto& line : this->pOnScreenLogger->getLogs()) {
+            text.setString(line);
+            text.setPosition(5, count*10 + 5);
+            target.draw(text);
+            count++;
+        }
+    }
+    this->pOnScreenLogger->vFlush();
 }
 
 }

@@ -8,7 +8,7 @@
 
 #include "../inc/TE/logger.hpp"
 #include "../inc/TE/core/core.hpp"
-#include "../inc/TE/InputService.hpp"
+#include "../inc/TE/input/InputService.hpp"
 
 namespace ta {
 
@@ -23,7 +23,7 @@ int GameApp::run() {
     this->vInitialize();
 
     clock.restart();
-    while (!shouldExit) {
+    while (!InputService::get().shouldExit) {
         sf::Time elapsed = clock.restart();
 
         // for debugging purpose only
@@ -41,6 +41,9 @@ int GameApp::run() {
         BEGIN_PROFILING("drawing")
             RenderTexture& target = WindowService::get().getCurrentTarget();
             ScreenService::get().render(target);
+#ifdef LOGGING_ENABLED
+            LoggerService::get().render(target);
+#endif
             WindowService::get().draw();
         END_PROFILING
 
@@ -65,7 +68,9 @@ void GameApp::initializeSubSystems() {
                           &screenServiceConf, &resourceServiceConf);
 
         // LoggerService must be initialized before doing any logging
+#ifdef LOGGING_ENABLED
         LoggerService::initialize(loggerServiceConf);
+#endif
         REP_DEBUG("Initialize all subsystems", LogChannelFlag::DEFAULT)
         ProfilerService::initialize(profilerServiceConf);
         MessageService::initialize(messageServiceConf);
@@ -75,8 +80,6 @@ void GameApp::initializeSubSystems() {
         ScreenService::initialize(screenServiceConf);
         REP_DEBUG("All subsystems initialized", LogChannelFlag::DEFAULT)
     END_PROFILING
-
-    MessageService::get().subscribe(EXIT_GAME_REQUESTED, [this](message msg) { this->shouldExit = true; });
 }
 
 void GameApp::destroySubSystems() {
@@ -86,7 +89,9 @@ void GameApp::destroySubSystems() {
     WindowService::destroy();
     MessageService::destroy();
     ProfilerService::destroy();
+#ifdef LOGGING_ENABLED
     LoggerService::destroy();
+#endif
 }
 
 void GameApp::readConfIni(LoggerServiceConf* loggerServiceConf,

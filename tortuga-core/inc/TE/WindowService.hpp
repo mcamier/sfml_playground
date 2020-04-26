@@ -52,6 +52,14 @@ public:
         return renderTarget;
     }
 
+    int getWidth() const {
+        return width;
+    }
+
+    int getHeight() const {
+        return height;
+    }
+
 protected:
     void vInit(WindowServiceConf conf) override {
         width = conf.get_width();

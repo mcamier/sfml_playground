@@ -14,8 +14,6 @@ namespace ta {
 const messageType EXIT_GAME_REQUESTED = 0x0;
 
 class GameApp {
-private:
-    bool shouldExit = false;
 
 public:
     GameApp() = default;

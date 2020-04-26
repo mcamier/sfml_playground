@@ -22,6 +22,7 @@ const int ball_count_max = 3;
 const messageType MSG_BALL_HIT = gInternString("MSG_BALL_HIT");
 const messageType MSG_PLAYER_MOVE_LEFT = gInternString("MSG_PLAYER_MOVE_LEFT");
 const messageType MSG_PLAYER_MOVE_RIGHT = gInternString("MSG_PLAYER_MOVE_RIGHT");
+const messageType MSG_CHANGE_ACTIVE_PLAYER = gInternString("MSG_CHANGE_ACTIVE_PLAYER");
 
 enum players {
     p1, p2

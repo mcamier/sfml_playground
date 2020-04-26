@@ -32,22 +32,12 @@ public:
         UIElement* playButton = UIButton::buildElement("Play", font, Origin::CENTER, 25, 0.5f, 0.7f,
                                                        [this]() { this->onPlayGame(); });
         this->addItem(playButton);
-
-        UIElement* exitButton = UIButton::buildElement("Exit", font, Origin::CENTER, 25, 0.5f, 0.85f,
-                                                       [this]() { this->onExitApp(); });
-        this->addItem(exitButton);
     }
 
 private:
     void onPlayGame() {
         ScreenService::get().addScreen(new GameScreen());
         close();
-    }
-
-    void onExitApp() {
-        message msg;
-        msg.type = EXIT_GAME_REQUESTED;
-        MessageService::get().sendMessage(msg);
     }
 
 public:

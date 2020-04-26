@@ -10,6 +10,8 @@
 #include <list>
 #include <string>
 
+#include <SFML/Graphics.hpp>
+
 #ifdef LOGGING_ENABLED
 #include <string>
 #include <sstream>
@@ -17,6 +19,7 @@
 #include "logger.hpp"
 #endif
 
+using sf::RenderTexture;
 
 namespace ta::utils {
 
@@ -31,6 +34,9 @@ class LoggerServiceConf : public IServiceConfiguration {
 };
 
 
+/**
+ *
+ */
 class ILogger {
 protected:
     // Minimum level needs for a log to be displayed processed by the ILogger instance
@@ -64,6 +70,34 @@ public:
 };
 
 
+/**
+ *
+ */
+class OnScreenLogger : public ILogger {
+private:
+    list<string> lines;
+
+public:
+    OnScreenLogger() : ILogger(LogLevelFlag::DEBUG | LogLevelFlag::WARNING | LogLevelFlag::ERROR, LogChannelFlag::ON_SCREEN) {}
+
+    OnScreenLogger(const OnScreenLogger &) = delete;
+
+    OnScreenLogger &operator=(const OnScreenLogger &) = delete;
+
+    void vLog(LogLevelFlag lvl,
+              const char *file,
+              int line,
+              std::string &message) override;
+
+    void vFlush() override;
+
+    std::list<string> getLogs();
+};
+
+
+/**
+ *
+ */
 class ConsoleLogger : public ILogger {
 
 public:
@@ -89,6 +123,9 @@ public:
 };
 
 
+/**
+ *
+ */
 class FileLogger : public ILogger {
 
 private:
@@ -185,8 +222,9 @@ class LoggerService :
     friend ISingletonService<LoggerService, LoggerServiceConf>;
 
 private:
-    ConsoleLogger *pConsoleLogger = nullptr;
-    FileLogger *pFileLogger = nullptr;
+    ConsoleLogger* pConsoleLogger = nullptr;
+    FileLogger* pFileLogger = nullptr;
+    OnScreenLogger* pOnScreenLogger = nullptr;
 
 protected:
     LoggerService() = default;
@@ -217,6 +255,8 @@ public:
              std::string &message);
 
     void flush();
+
+    void render(RenderTexture& target);
 
 private:
     void logInto(ILogger *logger,
